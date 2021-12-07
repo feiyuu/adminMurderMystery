@@ -68,7 +68,9 @@ function DramaList(props) {
   const SearchForm = () => {
     const [form] = Form.useForm();
 
-    const onFinish = (values) => {
+    const submitClick = (e) => {
+      e.preventDefault();
+      let values = form.getFieldsValue();
       values = removeEmpty(values);
       console.log("Received values of form: ", values);
       getList(values);
@@ -86,7 +88,6 @@ function DramaList(props) {
         form={form}
         name="advanced_search"
         className="ant-advanced-search-form"
-        onFinish={onFinish}
       >
         <Row gutter={24}>
           <Col span={6} key="dramaName">
@@ -188,7 +189,7 @@ function DramaList(props) {
               textAlign: "left",
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" onClick={submitClick}>
               搜索
             </Button>
             <Button
@@ -196,6 +197,7 @@ function DramaList(props) {
                 margin: "0 8px",
               }}
               onClick={() => {
+                console.log("resetFields===========================");
                 form.resetFields();
               }}
             >
@@ -217,12 +219,19 @@ function DramaList(props) {
           },
           pageSize: 16,
         }}
-        style={{marginTop:20}}
+        style={{ marginTop: 20 }}
         dataSource={list}
         renderItem={(item) => (
           <List.Item>
-            <Card hoverable bordered style={{ borderRadius: 6, width: 180, height: 260 }}>
-              <div style={{ position: "relative" }} onClick={() => updateDrama(item.Id)}>
+            <Card
+              hoverable
+              bordered
+              style={{ borderRadius: 6, width: 180, height: 260 }}
+            >
+              <div
+                style={{ position: "relative" }}
+                onClick={() => updateDrama(item.Id)}
+              >
                 <Image
                   style={{ borderRadius: 6, width: 180, height: 260 }}
                   preview={false}
@@ -239,19 +248,26 @@ function DramaList(props) {
                     borderBottomRightRadius: 4,
                   }}
                 >
-                  <div style={{ paddingLeft: 8, paddingRight: 8,fontWeight:"bold",fontSize:14 }}>
-                    禁止套娃
+                  <div
+                    style={{
+                      paddingLeft: 8,
+                      paddingRight: 8,
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    {item.dramaName}
                   </div>
                   <div
                     style={{
                       paddingLeft: 8,
                       paddingRight: 8,
                       paddingBottom: 4,
-                      fontSize:8,
-                      color:"#333"
+                      fontSize: 8,
+                      color: "#333",
                     }}
                   >
-                    硬核/国民/推理
+                    {item.type}/{item.theme}/{item.background}
                   </div>
                 </div>
               </div>

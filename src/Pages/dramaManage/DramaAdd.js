@@ -34,7 +34,7 @@ const DramaAdd = (props) => {
   const [nan, setNan] = useState(0);
   const [nv, setNv] = useState(0);
   const [fanChuan, setFanChuan] = useState("");
-  const [list, setList] = useState([]);
+  const [roleList, setRoleList] = useState([]);
 
   useEffect(() => {
     let tempId = props.match.params.id;
@@ -54,12 +54,13 @@ const DramaAdd = (props) => {
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
-      console.log("res.data.data========" + JSON.stringify(res.data.data));
       if (res.data.code == 1) {
         let data = res.data.data;
+        console.log("res.data.data========" + JSON.stringify(res.data.data));
         form.setFieldsValue({
           ...data,
         });
+        setRoleList(data.roles);
         setImageUrl(data.dramaCover);
       } else {
       }
@@ -106,10 +107,13 @@ const DramaAdd = (props) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
+    if (Id != -1) {
+      values.Id = Id;
+    }
     values.NanNvShu = nan + "男" + nv + "女" + fanChuan;
     values.numbers = nan + nv;
+    values.roles = roleList;
     console.log("Success:", values);
-
     axios({
       method: "post",
       url: Id == -1 ? servicePath.inertDrama : servicePath.updateDrama,
@@ -170,11 +174,7 @@ const DramaAdd = (props) => {
             onChange={handleChange}
           >
             {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="avatar"
-                style={{ width: "100%", height: 145 }}
-              />
+              <img src={imageUrl} style={{ width: 120, height: 160 }} />
             ) : (
               uploadButton
             )}
@@ -314,7 +314,7 @@ const DramaAdd = (props) => {
               onChange={(value) => {
                 setNan(value);
                 setTimeout(() => {}, 100);
-                setList(new Array(value + nv).fill({}));
+                setRoleList(new Array(value + nv).fill({}));
               }}
             />
             <InputNumber
@@ -324,7 +324,7 @@ const DramaAdd = (props) => {
               addonAfter={"女"}
               onChange={(value) => {
                 setNv(value);
-                setList(new Array(nan + value).fill({}));
+                setRoleList(new Array(nan + value).fill({}));
               }}
             />
             <Checkbox
@@ -367,9 +367,9 @@ const DramaAdd = (props) => {
         <Form.Item label="角色">
           <Space>
             <List
-              grid={{ gutter: 16, column: list.length }}
-              dataSource={list}
-              renderItem={(item) => (
+              grid={{ gutter: 16, column: roleList.length }}
+              dataSource={roleList}
+              renderItem={(item, index) => (
                 <List.Item>
                   <Card
                     hoverable
@@ -377,46 +377,70 @@ const DramaAdd = (props) => {
                     style={{ borderRadius: 6, width: 120 }}
                   >
                     <div>
-                      <Image
-                        style={{
-                          borderTopLeftRadius: 4,
-                          borderTopRightRadius: 4,
-                          width: 120,
-                          height: 160,
-                        }}
-                        preview={false}
-                        src={item.dramaCover || ""}
-                      />
+                      <Upload
+                        listType="picture-card"
+                        showUploadList={false}
+                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                        beforeUpload={beforeUpload}
+                        onChange={handleChange}
+                      >
+                        {item.roleAvatar ? (
+                          <Image
+                            style={{
+                              borderTopLeftRadius: 4,
+                              borderTopRightRadius: 4,
+                              width: 120,
+                              height: 160,
+                            }}
+                            preview={false}
+                            src={item.roleAvatar}
+                          />
+                        ) : (
+                          uploadButton
+                        )}
+                      </Upload>
+
                       <div
+                        className="rolefooter"
                         style={{
                           color: "black",
-                          backgroundColor: "#B3937ada",
                           width: 120,
                           borderBottomLeftRadius: 4,
                           borderBottomRightRadius: 4,
                         }}
                       >
-                        <div
+                        <Input
                           style={{
                             paddingLeft: 8,
                             paddingRight: 8,
                             fontWeight: "bold",
-                            fontSize: 14,
+                            fontSize: 12,
                           }}
-                        >
-                          禁止套娃
-                        </div>
-                        <div
-                          style={{
-                            paddingLeft: 8,
-                            paddingRight: 8,
-                            paddingBottom: 4,
-                            fontSize: 8,
-                            color: "#333",
+                          bordered={false}
+                          placeholder="请输入角色名字"
+                          value={item.roleName}
+                          onChange={(e) => {
+                            let roleListTemp = JSON.parse(
+                              JSON.stringify(roleList)
+                            );
+                            roleListTemp[index].roleName = e.target.value;
+                            setRoleList(roleListTemp);
                           }}
+                        ></Input>
+                        <Radio.Group
+                          bordered={false}
+                          onChange={(e) => {
+                            let roleListTemp = JSON.parse(
+                              JSON.stringify(roleList)
+                            );
+                            roleListTemp[index].roleSex = e.target.value;
+                            setRoleList(roleListTemp);
+                          }}
+                          value={item.roleSex}
                         >
-                          硬核/国民/推理
-                        </div>
+                          <Radio.Button value="男">男</Radio.Button>
+                          <Radio.Button value="女">女</Radio.Button>
+                        </Radio.Group>
                       </div>
                     </div>
                   </Card>
