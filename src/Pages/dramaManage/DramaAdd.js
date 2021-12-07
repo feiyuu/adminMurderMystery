@@ -157,7 +157,7 @@ const DramaAdd = (props) => {
     </div>
   );
   return (
-    <div>
+    <div className="page-drama-add">
       {Id != -1 && Id != 0 ? (
         <div onClick={handleBack} style={{ width: "60px" }}>
           <LeftSquareOutlined /> 返回

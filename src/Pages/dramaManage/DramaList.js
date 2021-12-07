@@ -199,6 +199,7 @@ function DramaList(props) {
               onClick={() => {
                 console.log("resetFields===========================");
                 form.resetFields();
+                getList({});
               }}
             >
               清空
@@ -212,28 +213,28 @@ function DramaList(props) {
     <div>
       <SearchForm />
       <List
-        grid={{ gutter: 46, column: 8 }}
+        grid={{ gutter: 46, column: 10 }}
         pagination={{
           onChange: (page) => {
             console.log(page);
           },
-          pageSize: 16,
+          pageSize: 30,
         }}
-        style={{ marginTop: 20 }}
+        style={{ marginTop: 60 ,paddingLeft:20,paddingRight:20}}
         dataSource={list}
         renderItem={(item) => (
           <List.Item>
             <Card
               hoverable
               bordered
-              style={{ borderRadius: 6, width: 180, height: 260 }}
+              style={{ borderRadius: 6, width: 120, height: 170 }}
             >
               <div
                 style={{ position: "relative" }}
                 onClick={() => updateDrama(item.Id)}
               >
                 <Image
-                  style={{ borderRadius: 6, width: 180, height: 260 }}
+                  style={{ borderRadius: 6, width: 120, height: 170 }}
                   preview={false}
                   src={item.dramaCover}
                 />
@@ -243,7 +244,7 @@ function DramaList(props) {
                     bottom: 0,
                     color: "black",
                     backgroundColor: "#B3937ada",
-                    width: 180,
+                    width: 120,
                     borderBottomLeftRadius: 4,
                     borderBottomRightRadius: 4,
                   }}

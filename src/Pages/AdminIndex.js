@@ -13,6 +13,9 @@ import DramaAdd from "./dramaManage/DramaAdd";
 import DramaList from "./dramaManage/DramaList";
 import StaffAdd from "./staffManage/StaffAdd";
 import StaffList from "./staffManage/StaffList";
+import GoodsList from "./goodsManage/GoodsList";
+import GoodsAdd from "./goodsManage/GoodsAdd";
+import OrderManageList from "./OrderManageList";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -41,7 +44,7 @@ function AdminIndex(props) {
       props.history.push("/index/staffList");
     }
   };
-  const handleClickArticle = (e) => {
+  const handleClickDramaMan = (e) => {
     console.log(e.item.props);
     if (e.key == "DramaAdd") {
       props.history.push("/index/dramaAdd");
@@ -49,9 +52,20 @@ function AdminIndex(props) {
       props.history.push("/index/dramaList");
     }
   };
+  const handleClickGoodsMan = (e) => {
+    console.log(e.item.props);
+    if (e.key == "GoodsAdd") {
+      props.history.push("/index/goodsAdd");
+    } else {
+      props.history.push("/index/goodsList");
+    }
+  };
   const handleClickPersonInfo = (e) => {
     console.log(e.item.props);
     props.history.push("/index/staffAdd/" + localStorage.getItem("Id"));
+  };
+  const handleClickOrderMan = (e) => {
+    props.history.push("/index/orderManageList");
   };
 
   return (
@@ -81,15 +95,24 @@ function AdminIndex(props) {
           </SubMenu>
           <SubMenu
             key="sub2"
-            onClick={handleClickArticle}
+            onClick={handleClickDramaMan}
             icon={<DesktopOutlined />}
             title="剧本管理"
           >
             <Menu.Item key="DramaAdd">添加剧本</Menu.Item>
             <Menu.Item key="DramaList">剧本列表</Menu.Item>
           </SubMenu>
-          <Menu.Item key="9" icon={<FileOutlined />}>
-            <span>评论管理</span>
+          <SubMenu
+            key="sub3"
+            onClick={handleClickGoodsMan}
+            icon={<DesktopOutlined />}
+            title="商品管理"
+          >
+            <Menu.Item key="GoodsAdd">添加商品</Menu.Item>
+            <Menu.Item key="GoodsList">商品列表</Menu.Item>
+          </SubMenu>
+          <Menu.Item key="9" icon={<FileOutlined />}onClick={handleClickOrderMan}>
+            <span>订单管理</span>
           </Menu.Item>
         </Menu>
       </Sider>
@@ -99,7 +122,7 @@ function AdminIndex(props) {
             <Breadcrumb.Item>后台管理系统</Breadcrumb.Item>
             {/* <Breadcrumb.Item>工作台</Breadcrumb.Item> */}
           </Breadcrumb>
-          <div style={{ padding: 24, background: "#fff", minHeight:  "100%"}}>
+          <div style={{ padding: 24, background: "#fff"}}>
             <div>
               <Route path="/index/" />
               <Route path="/index/dramaAdd/" exact component={DramaAdd} />
@@ -108,10 +131,14 @@ function AdminIndex(props) {
               <Route path="/index/staffAdd/" exact component={StaffAdd} />
               <Route path="/index/staffAdd/:id" exact component={StaffAdd} />
               <Route path="/index/staffList/" component={StaffList} />
+              <Route path="/index/goodsAdd/" exact component={GoodsAdd} />
+              <Route path="/index/goodsAdd/:id" exact component={GoodsAdd} />
+              <Route path="/index/goodsList/" component={GoodsList} />
+              <Route path="/index/orderManageList/" component={OrderManageList} />
             </div>
           </div>
         </Content>
-        <Footer style={{ textAlign: "center" }}>17jbs.com</Footer>
+        {/* <Footer style={{ textAlign: "center" }}>17jbs.com</Footer> */}
       </Layout>
     </Layout>
   );

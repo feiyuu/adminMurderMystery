@@ -74,7 +74,7 @@ function StaffList(props) {
         dataSource={list}
         renderItem={(item) => (
           <List.Item>
-            <Row className="list-div">
+            <Row className="list-div" style={{display:"flex",alignItems:"center"}}>
               <Col span={4}>
                 <Avatar shape="square" size={54} src={item.dmAvatarUrl} />
               </Col>
