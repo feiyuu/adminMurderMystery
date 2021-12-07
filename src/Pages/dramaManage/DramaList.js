@@ -19,17 +19,17 @@ import axios from "axios";
 import servicePath from "../../config/apiUrl";
 const { confirm } = Modal;
 
-function StaffList(props) {
+function DramaList(props) {
   const [list, setList] = useState([]);
 
   const getList = (params) => {
     axios({
       method: "get",
       url: servicePath.getFilterDramaList,
-      params:{
-        filters:params,
-        page:1,
-        pageSize:9999,
+      params: {
+        filters: params,
+        page: 1,
+        pageSize: 9999,
       },
       withCredentials: true,
     }).then((res) => {
@@ -57,8 +57,8 @@ function StaffList(props) {
   };
 
   //修改剧本的跳转方法
-  const updateStaff = (id, checked) => {
-    props.history.push("/index/staffAdd/" + id);
+  const updateDrama = (id, checked) => {
+    props.history.push("/index/dramaAdd/" + id);
   };
 
   useEffect(() => {
@@ -104,6 +104,9 @@ function StaffList(props) {
                 <Select.Option value={5}>5人</Select.Option>
                 <Select.Option value={6}>6人</Select.Option>
                 <Select.Option value={7}>7人</Select.Option>
+                <Select.Option value={8}>8人</Select.Option>
+                <Select.Option value={9}>9人</Select.Option>
+                <Select.Option value={10}>10人</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -115,6 +118,8 @@ function StaffList(props) {
                 <Select.Option value={4}>4小时</Select.Option>
                 <Select.Option value={5}>5小时</Select.Option>
                 <Select.Option value={6}>6小时</Select.Option>
+                <Select.Option value={7}>7小时</Select.Option>
+                <Select.Option value={8}>8小时</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -212,13 +217,14 @@ function StaffList(props) {
           },
           pageSize: 16,
         }}
+        style={{marginTop:20}}
         dataSource={list}
         renderItem={(item) => (
-          <List.Item style={{ width: 200 }}>
-            <Card hoverable bordered style={{ borderRadius: 8 }}>
-              <div style={{ position: "relative" }}>
+          <List.Item>
+            <Card hoverable bordered style={{ borderRadius: 6, width: 180, height: 260 }}>
+              <div style={{ position: "relative" }} onClick={() => updateDrama(item.Id)}>
                 <Image
-                  style={{ borderRadius: 6, height: "100%" }}
+                  style={{ borderRadius: 6, width: 180, height: 260 }}
                   preview={false}
                   src={item.dramaCover}
                 />
@@ -226,14 +232,14 @@ function StaffList(props) {
                   style={{
                     position: "absolute",
                     bottom: 0,
-                    color: "white",
-                    backgroundColor: "#880d141f",
-                    width: "100%",
-                    borderBottomLeftRadius: 6,
-                    borderBottomRightRadius: 6,
+                    color: "black",
+                    backgroundColor: "#B3937ada",
+                    width: 180,
+                    borderBottomLeftRadius: 4,
+                    borderBottomRightRadius: 4,
                   }}
                 >
-                  <div style={{ paddingLeft: 8, paddingRight: 8 }}>
+                  <div style={{ paddingLeft: 8, paddingRight: 8,fontWeight:"bold",fontSize:14 }}>
                     禁止套娃
                   </div>
                   <div
@@ -241,6 +247,8 @@ function StaffList(props) {
                       paddingLeft: 8,
                       paddingRight: 8,
                       paddingBottom: 4,
+                      fontSize:8,
+                      color:"#333"
                     }}
                   >
                     硬核/国民/推理
@@ -255,4 +263,4 @@ function StaffList(props) {
   );
 }
 
-export default StaffList;
+export default DramaList;

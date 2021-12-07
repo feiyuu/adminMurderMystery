@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from "react";
 import "../../static/css/dramaManage/DramaAdd.css";
-import { Row, Col, Form, Upload, Input, message, Button, Radio } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Upload,
+  Input,
+  message,
+  Button,
+  Radio,
+  InputNumber,
+  Checkbox,
+  Space,
+  List,
+  Card,
+  Image,
+} from "antd";
 import {
   LoadingOutlined,
   PlusOutlined,
@@ -9,43 +24,33 @@ import {
 import axios from "axios";
 import servicePath from "../../config/apiUrl";
 import { icons } from "antd/lib/image/PreviewGroup";
+const { TextArea } = Input;
 
-const StaffAdd = (props) => {
+const DramaAdd = (props) => {
   const [Id, setId] = useState(-1);
   // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
   const [imageUrl, setImageUrl] = useState(""); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
   const [loading, setLoading] = useState(false); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [nan, setNan] = useState(0);
+  const [nv, setNv] = useState(0);
+  const [fanChuan, setFanChuan] = useState("");
+  const [list, setList] = useState([]);
 
   useEffect(() => {
     let tempId = props.match.params.id;
-    console.log("StaffAdd--useEffect===" + tempId);
+    console.log("DramaAdd--useEffect===" + tempId);
+
     if (tempId) {
       setId(tempId);
-      getUser(tempId);
+      getDramaDetail(tempId);
     } else {
-      autoId();
     }
   }, []);
 
-  const autoId = (Id) => {
+  const getDramaDetail = (Id) => {
     axios({
       method: "get",
-      url: servicePath.autoId,
-      withCredentials: true,
-    }).then((res) => {
-      console.log("res.data.data========" + JSON.stringify(res.data.data));
-      if (res.data.code == 1) {
-        form.setFieldsValue({
-          loginName: res.data.data,
-        });
-      } else {
-      }
-    });
-  };
-  const getUser = (Id) => {
-    axios({
-      method: "get",
-      url: servicePath.getUser,
+      url: servicePath.getDramaDetail,
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
@@ -55,7 +60,7 @@ const StaffAdd = (props) => {
         form.setFieldsValue({
           ...data,
         });
-        setImageUrl(data.dmAvatarUrl);
+        setImageUrl(data.dramaCover);
       } else {
       }
     });
@@ -72,7 +77,7 @@ const StaffAdd = (props) => {
         setImageUrl(imageUrl);
         setLoading(false);
         form.setFieldsValue({
-          dmAvatarUrl: imageUrl,
+          dramaCover: imageUrl,
         });
       });
     }
@@ -101,17 +106,19 @@ const StaffAdd = (props) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
+    values.NanNvShu = nan + "男" + nv + "女" + fanChuan;
+    values.numbers = nan + nv;
     console.log("Success:", values);
 
     axios({
       method: "post",
-      url: Id == -1 ? servicePath.inertUser : servicePath.updateUser,
+      url: Id == -1 ? servicePath.inertDrama : servicePath.updateDrama,
       data: values,
       withCredentials: true,
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
-        props.history.push("/index/staffList");
+        props.history.push("/index/dramaList");
       } else {
       }
     });
@@ -130,7 +137,7 @@ const StaffAdd = (props) => {
       span: 4,
     },
     wrapperCol: {
-      span: 8,
+      span: 20,
     },
   };
   const tailLayout = {
@@ -154,32 +161,7 @@ const StaffAdd = (props) => {
       ) : null}
 
       <Form {...layout} form={form} onFinish={onFinish}>
-        <Form.Item
-          name="loginName"
-          label="工号"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input disabled={true} />
-        </Form.Item>
-        <Form.Item
-          name="loginPsw"
-          label="密码"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item name="dmNickName" label="昵称" initialValue="">
-          <Input />
-        </Form.Item>
-        <Form.Item name="dmAvatarUrl" label="头像" initialValue="">
+        <Form.Item name="dramaCover" label="剧本封面" initialValue="">
           <Upload
             listType="picture-card"
             showUploadList={false}
@@ -188,17 +170,260 @@ const StaffAdd = (props) => {
             onChange={handleChange}
           >
             {imageUrl ? (
-              <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+              <img
+                src={imageUrl}
+                alt="avatar"
+                style={{ width: "100%", height: 145 }}
+              />
             ) : (
               uploadButton
             )}
           </Upload>
         </Form.Item>
-        <Form.Item label="性别" name="dmGender" initialValue={0}>
+        <Form.Item
+          name="dramaName"
+          label="剧本名称"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <Input style={{ width: 600 }} />
+        </Form.Item>
+        <Form.Item
+          name="profile"
+          label="剧本简介"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <TextArea maxLength={76} style={{ height: 60, width: 600 }} />
+        </Form.Item>
+        <Form.Item
+          label="时长"
+          name="duration"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
           <Radio.Group>
-            <Radio.Button value={1}>男</Radio.Button>
-            <Radio.Button value={0}>女</Radio.Button>
+            <Radio.Button value={3}>3小时</Radio.Button>
+            <Radio.Button value={4}>4小时</Radio.Button>
+            <Radio.Button value={5}>5小时</Radio.Button>
+            <Radio.Button value={6}>6小时</Radio.Button>
+            <Radio.Button value={7}>7小时</Radio.Button>
+            <Radio.Button value={8}>8小时</Radio.Button>
           </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="背景"
+          name="background"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Radio.Button value="古风">古风</Radio.Button>
+            <Radio.Button value="民国">民国</Radio.Button>
+            <Radio.Button value="现代">现代</Radio.Button>
+            <Radio.Button value="未来">未来</Radio.Button>
+            <Radio.Button value="架空">架空</Radio.Button>
+            <Radio.Button value="日式">日式</Radio.Button>
+            <Radio.Button value="欧式">欧式</Radio.Button>
+            <Radio.Button value="其他">其他</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="主题"
+          name="theme"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Radio.Button value="惊悚">惊悚</Radio.Button>
+            <Radio.Button value="情感">情感</Radio.Button>
+            <Radio.Button value="推理">推理</Radio.Button>
+            <Radio.Button value="欢乐">欢乐</Radio.Button>
+            <Radio.Button value="阵营">阵营</Radio.Button>
+            <Radio.Button value="机制">机制</Radio.Button>
+            <Radio.Button value="谍战">谍战</Radio.Button>
+            <Radio.Button value="武侠">武侠</Radio.Button>
+            <Radio.Button value="玄幻">玄幻</Radio.Button>
+            <Radio.Button value="立意">立意</Radio.Button>
+            <Radio.Button value="其他">其他</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="类型"
+          name="type"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Radio.Button value="新本格">新本格</Radio.Button>
+            <Radio.Button value="本格">本格</Radio.Button>
+            <Radio.Button value="变格">变格</Radio.Button>
+            <Radio.Button value="还原">还原</Radio.Button>
+            <Radio.Button value="封闭">封闭</Radio.Button>
+            <Radio.Button value="半封闭">半封闭</Radio.Button>
+            <Radio.Button value="开放">开放</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="难度"
+          name="difficulty"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Radio.Button value="简单">简单</Radio.Button>
+            <Radio.Button value="进阶">进阶</Radio.Button>
+            <Radio.Button value="硬核">硬核</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="男女数">
+          <Space>
+            <InputNumber
+              min={1}
+              max={10 - nv}
+              style={{ width: 100 }}
+              addonAfter={"男"}
+              onChange={(value) => {
+                setNan(value);
+                setTimeout(() => {}, 100);
+                setList(new Array(value + nv).fill({}));
+              }}
+            />
+            <InputNumber
+              min={1}
+              max={10 - nan}
+              style={{ width: 100 }}
+              addonAfter={"女"}
+              onChange={(value) => {
+                setNv(value);
+                setList(new Array(nan + value).fill({}));
+              }}
+            />
+            <Checkbox
+              onChange={(e) => {
+                form.setFieldsValue({
+                  NanNvShu: "",
+                });
+                if (e.target.checked) {
+                  setFanChuan("(可反串)");
+                } else {
+                  setFanChuan("");
+                }
+              }}
+            >
+              可反串
+            </Checkbox>
+          </Space>
+        </Form.Item>
+        <Form.Item label="媒体评分" name="dramaGrade" initialValue={1}>
+          <InputNumber min={1} max={10} style={{ width: 100 }} />
+        </Form.Item>
+        <Form.Item label="是否预发" name="beforehand" initialValue={0}>
+          <Radio.Group>
+            <Radio.Button value={1}>是</Radio.Button>
+            <Radio.Button value={0}>否</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="价格"
+          name="price"
+          rules={[
+            {
+              required: true,
+              message: "必填项",
+            },
+          ]}
+        >
+          <InputNumber style={{ width: 100 }} />
+        </Form.Item>
+        <Form.Item label="角色">
+          <Space>
+            <List
+              grid={{ gutter: 16, column: list.length }}
+              dataSource={list}
+              renderItem={(item) => (
+                <List.Item>
+                  <Card
+                    hoverable
+                    bordered
+                    style={{ borderRadius: 6, width: 120 }}
+                  >
+                    <div>
+                      <Image
+                        style={{
+                          borderTopLeftRadius: 4,
+                          borderTopRightRadius: 4,
+                          width: 120,
+                          height: 160,
+                        }}
+                        preview={false}
+                        src={item.dramaCover || ""}
+                      />
+                      <div
+                        style={{
+                          color: "black",
+                          backgroundColor: "#B3937ada",
+                          width: 120,
+                          borderBottomLeftRadius: 4,
+                          borderBottomRightRadius: 4,
+                        }}
+                      >
+                        <div
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            fontWeight: "bold",
+                            fontSize: 14,
+                          }}
+                        >
+                          禁止套娃
+                        </div>
+                        <div
+                          style={{
+                            paddingLeft: 8,
+                            paddingRight: 8,
+                            paddingBottom: 4,
+                            fontSize: 8,
+                            color: "#333",
+                          }}
+                        >
+                          硬核/国民/推理
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </List.Item>
+              )}
+            />
+          </Space>
         </Form.Item>
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
@@ -210,4 +435,4 @@ const StaffAdd = (props) => {
   );
 };
 
-export default StaffAdd;
+export default DramaAdd;

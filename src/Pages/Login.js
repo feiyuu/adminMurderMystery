@@ -53,7 +53,7 @@ function Login(props) {
   return (
     <div className="login-div">
       <Spin tip="Lading..." spinning={isLoading}>
-        <Card bordered={true} style={{ width: 400, padding: 20 }}>
+        <Card bordered={true} style={{ width: 400, padding: 20,borderRadius:6 }}>
           <div
             style={{
               textAlign: "center",

@@ -9,6 +9,9 @@ let servicePath = {
   inertUser: ipUrl + "inertUser", //  获取用户信息
   autoId: ipUrl + "autoId", //  获取用户信息
   getFilterDramaList: ipUrl + "getFilterDramaList", //  获取用户信息
+  getDramaDetail: ipUrl + "getDramaDetail", //  获取用户信息
+  inertDrama: ipUrl + "inertDrama", //  获取用户信息
+  updateDrama: ipUrl + "updateDrama", //  获取用户信息
 };
 
 export default servicePath;
