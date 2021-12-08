@@ -1,0 +1,11 @@
+.ant-card-body {
+  padding: 0;
+}
+.ant-image {
+  display: block;
+}
+.page-room-add .ant-upload-select-picture-card{
+  width: 160px !important;
+  height: 90px  !important;
+  margin: 0px  !important;
+}

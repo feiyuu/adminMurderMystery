@@ -14,10 +14,19 @@ let servicePath = {
   updateDrama: ipUrl + "updateDrama", //  更新剧本
   getOrderList: ipUrl + "getOrderList", //  获取订单列表
   updaTeOrder: ipUrl + "updaTeOrder", //  更新订单
+
+  getRooms: ipUrl + "getRooms", //  获取房间列表
+  getRoomDetail: ipUrl + "getRoomDetail", //  获取房间详情
+  deleteRoom: ipUrl + "deleteRoom", //  删除房间
+  updaTeRoom: ipUrl + "updaTeRoom", //  修改房间信息
+
+
   getGoods: ipUrl + "getGoods", //  获取商品列表
   updaTeGoods: ipUrl + "updaTeGoods", //  更新商品
   deleteGoods: ipUrl + "deleteGoods", //  删除商品
   updaTeGoodsState: ipUrl + "updaTeGoodsState", //  更新商品状态
+
+  getTeamList: ipUrl + "getTeamList", //  获取组队列表
 };
 
 export default servicePath;

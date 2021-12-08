@@ -25,7 +25,7 @@ const removeEmpty = (obj) => {
 };
 function OrderManageList(props) {
   const [list, setList] = useState([]);
-  const [state, setState] = useState();
+  const [state, setState] = useState(30);
   const [userName, setUserName] = useState("");
 
   const getList = () => {
@@ -46,9 +46,10 @@ function OrderManageList(props) {
     });
   };
 
-  const deliverGoods = (id,state) => {
+  const deliverGoods = (id, state) => {
     confirm({
-      title: state==40?"确定已经把商品交给顾客了吗？":"确定进行退款操作吗？",
+      title:
+        state == 40 ? "确定已经把商品交给顾客了吗？" : "确定进行退款操作吗？",
       content: "确定后无法更改",
       okText: "是",
       cancelText: "否",
@@ -78,7 +79,7 @@ function OrderManageList(props) {
       goods = JSON.parse(goods);
       for (var i = 0; i < goods.length; i++) {
         let a = goods[i];
-        string += a.goodsName + "x" + a.count + " ";
+        string += a.goodsName + "x" + a.count + "  ";
       }
     }
     return string;
@@ -101,14 +102,10 @@ function OrderManageList(props) {
 
   useEffect(() => {
     getList();
-  }, []);
-
-  useEffect(() => {
-    getList();
   }, [state]);
 
   return (
-    <div id="scrollableDiv">
+    <div>
       <div>
         <Row>
           <Col
@@ -123,7 +120,7 @@ function OrderManageList(props) {
                 setState(e.target.value);
               }}
               value={state}
-              defaultValue=""
+              defaultValue={30}
             >
               <Radio.Button value="">全部</Radio.Button>
               <Radio.Button value={10}>待付款</Radio.Button>
@@ -162,7 +159,7 @@ function OrderManageList(props) {
               onClick={() => {
                 setUserName("");
                 setState("");
-                getList()
+                getList();
               }}
             >
               清空
@@ -174,8 +171,8 @@ function OrderManageList(props) {
         style={{
           paddingTop: 20,
           paddingBottom: 10,
-          paddingLeft: 24,
-          paddingRight: 48,
+          paddingLeft: 16,
+          paddingRight: 22,
         }}
       >
         <Row className="list-div">
@@ -199,43 +196,58 @@ function OrderManageList(props) {
           </Col>
         </Row>
       </div>
-      <InfiniteScroll dataLength={list.length} scrollableTarget="scrollableDiv">
-        <List
-          style={{ height: 700 }}
-          bordered
-          dataSource={list}
-          renderItem={(item) => (
-            <List.Item>
-              <Row className="list-div" style={{display:"flex",alignItems:"center"}}>
-                <Col span={8}>
-                  <div>{getGoods(item.goods)}</div>
-                </Col>
-                <Col span={3}>{item.total_price}元</Col>
-                <Col span={3}>{item.order_time}</Col>
-                <Col span={3}>{getStateTxt(item.state)}</Col>
-                <Col span={3}>{item.userName}</Col>
-                <Col span={4}>
-                  <Button
-                    disabled={item.state != 30}
-                    type="primary"
-                    style={{marginRight:10}}
-                    onClick={() => deliverGoods(item.Id,40)}
-                  >
-                    发货
-                  </Button>
-                  <Button
-                    disabled={item.state != 30}
-                    onClick={() => deliverGoods(item.Id,60)}
-                  >
-                    退款
-                  </Button>
-                  &nbsp;
-                </Col>
-              </Row>
-            </List.Item>
-          )}
-        />
-      </InfiniteScroll>
+      <div
+        id="scrollableDiv"
+        style={{
+          paddingLeft: "16px",
+          border: "1px solid rgba(140, 140, 140, 0.35)",
+        }}
+      >
+        <InfiniteScroll
+          dataLength={list.length}
+          scrollableTarget="scrollableDiv"
+        >
+          <List
+            style={{ height: 700, overflowY: "scroll" }}
+            dataSource={list}
+            renderItem={(item) => (
+              <List.Item>
+                <Row
+                  className="list-div"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <Col span={8} style={{ paddingRight: 20 }}>
+                    {getGoods(item.goods)}
+                    {getGoods(item.goods)}
+                    {getGoods(item.goods)}
+                  </Col>
+                  <Col span={3}>{item.total_price}元</Col>
+                  <Col span={3}>{item.order_time}</Col>
+                  <Col span={3}>{getStateTxt(item.state)}</Col>
+                  <Col span={3}>{item.userName}</Col>
+                  <Col span={4}>
+                    <Button
+                      disabled={item.state != 30}
+                      type="primary"
+                      style={{ marginRight: 10 }}
+                      onClick={() => deliverGoods(item.Id, 40)}
+                    >
+                      发货
+                    </Button>
+                    <Button
+                      disabled={item.state != 30 && item.state != 40}
+                      onClick={() => deliverGoods(item.Id, 60)}
+                    >
+                      退款
+                    </Button>
+                    &nbsp;
+                  </Col>
+                </Row>
+              </List.Item>
+            )}
+          />
+        </InfiniteScroll>
+      </div>
     </div>
   );
 }

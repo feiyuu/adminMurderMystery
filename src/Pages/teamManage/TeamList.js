@@ -23,7 +23,7 @@ const removeEmpty = (obj) => {
   });
   return obj;
 };
-function GoodsList(props) {
+function TeamList(props) {
   const [list, setList] = useState([]);
   const [state, setState] = useState();
   const [goodsName, setGoodsName] = useState("");
@@ -37,7 +37,7 @@ function GoodsList(props) {
 
     axios({
       method: "get",
-      url: servicePath.getGoods,
+      url: servicePath.getTeamList,
       withCredentials: true,
       params: params,
     }).then((res) => {
@@ -264,4 +264,4 @@ function GoodsList(props) {
   );
 }
 
-export default GoodsList;
+export default TeamList;
