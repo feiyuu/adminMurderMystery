@@ -6,9 +6,9 @@ import {
   Modal,
   message,
   Button,
-  Avatar,
   Radio,
   Input,
+  Select,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
@@ -25,13 +25,16 @@ const removeEmpty = (obj) => {
 };
 function TeamList(props) {
   const [list, setList] = useState([]);
-  const [state, setState] = useState();
-  const [goodsName, setGoodsName] = useState("");
+  const [state, setState] = useState(10);
+  const [teamDramaName, setTeamDramaName] = useState("");// 组局剧本名称
+  const [dmUser, setDmUser] = useState([]); // 筛选可选项，主持人名字
+  const [selectDmUser, setSelectDmUser] = useState(); // 选中的主持人名字
 
   const getList = () => {
     let params = {
-      state: state,
-      goodsName: goodsName,
+      status: state,
+      teamDramaName: teamDramaName,
+      dmNickName: selectDmUser,
     };
     params = removeEmpty(params);
 
@@ -46,20 +49,20 @@ function TeamList(props) {
     });
   };
 
-  const updaTeGoodsState = (id, state) => {
+  const updateTeamState = (id, state) => {
     confirm({
-      content: state == 20 ? "确定下架该商品吗？" : "确定上架该商品吗？",
+      content:
+        state == 30 ? "确定组局成功，可以完成了吗？" : "确定解散这次组局吗？",
       okText: "是",
       cancelText: "否",
       onOk() {
         let data = {
-          goodsId: id,
+          TeamId: id,
           state: state,
         };
-
         axios({
           method: "post",
-          url: servicePath.updaTeGoodsState,
+          url: servicePath.updateTeamState,
           data: data,
           withCredentials: true,
         }).then((res) => {
@@ -73,40 +76,31 @@ function TeamList(props) {
     });
   };
 
-  const editGoods = (id) => {
-    props.history.push("/index/goodsAdd/" + id);
+  const editTeam = (id) => {
+    props.history.push("/index/TeamAdd/" + id);
   };
-  const deleteGoods = (id) => {
-    confirm({
-      title: "确定删除该商品吗？",
-      content: "删除后不可恢复",
-      okType: "danger",
-      okText: "是",
-      cancelText: "否",
-      onOk() {
-        axios({
-          method: "post",
-          url: servicePath.deleteGoods,
-          data: {
-            goodsId: id,
-          },
-          withCredentials: true,
-        }).then((res) => {
-          if (res.data.code == 1) {
-            message.success("操作成功");
-            getList();
-          }
-        });
-      },
-      onCancel() {},
+
+  const getDmUser = () => {
+    axios({
+      method: "get",
+      url: servicePath.getDMUsers,
+      withCredentials: true,
+    }).then((res) => {
+      if (res.data.code == 1) {
+        let list = res.data.data;
+        setDmUser(list);
+      }
     });
   };
+
   const getStateTxt = (state) => {
     let string = "";
     if (state == 10) {
-      string = "已上架";
-    } else if (state == 20) {
-      string = "已下架";
+      string = "组局中";
+    } else if (state == 30) {
+      string = "已完成";
+    } else if (state == 50) {
+      string = "已解散";
     }
     return string;
   };
@@ -114,6 +108,12 @@ function TeamList(props) {
   useEffect(() => {
     getList();
   }, [state]);
+  useEffect(() => {
+    getList();
+  }, [selectDmUser]);
+  useEffect(() => {
+    getDmUser();
+  }, []);
 
   return (
     <div>
@@ -131,12 +131,32 @@ function TeamList(props) {
                 setState(e.target.value);
               }}
               value={state}
-              defaultValue=""
+              defaultValue={10}
             >
               <Radio.Button value="">全部</Radio.Button>
-              <Radio.Button value={10}>已上架</Radio.Button>
-              <Radio.Button value={20}>已下架</Radio.Button>
+              <Radio.Button value={10}>组局中</Radio.Button>
+              <Radio.Button value={30}>已完成</Radio.Button>
+              <Radio.Button value={50}>已解散</Radio.Button>
             </Radio.Group>
+            <Select
+              style={{ marginLeft: 10, width: 200 }}
+              defaultValue="全部"
+              value={selectDmUser}
+              onChange={(value) => {
+                setSelectDmUser(value);
+              }}
+            >
+              <Select.Option key="">全部</Select.Option>
+              {dmUser.map((item, index) => {
+                if (item.dmNickName) {
+                  return (
+                    <Select.Option key={item.Id} value={item.dmNickName}>
+                      {item.dmNickName}
+                    </Select.Option>
+                  );
+                }
+              })}
+            </Select>
           </Col>
           <Col
             span={12}
@@ -146,11 +166,11 @@ function TeamList(props) {
           >
             <Input
               style={{ width: 200, marginRight: 10 }}
-              placeholder="请输入商品名"
+              placeholder="请输入剧本名"
               onChange={(e) => {
-                setGoodsName(e.target.value);
+                setTeamDramaName(e.target.value);
               }}
-              value={goodsName}
+              value={teamDramaName}
             ></Input>
             <Button
               type="primary"
@@ -165,9 +185,7 @@ function TeamList(props) {
                 margin: "0 8px",
               }}
               onClick={() => {
-                setGoodsName("");
-                setState("");
-                getList();
+                setTeamDramaName("");
               }}
             >
               清空
@@ -185,18 +203,21 @@ function TeamList(props) {
       >
         <Row className="list-div">
           <Col span={4}>
-            <b>商品</b>
+            <b>剧本</b>
           </Col>
           <Col span={4}>
-            <b>名称</b>
+            <b>开局时间</b>
           </Col>
           <Col span={4}>
-            <b>价格</b>
+            <b>DM</b>
+          </Col>
+          <Col span={4}>
+            <b>人员</b>
           </Col>
           <Col span={4}>
             <b>状态</b>
           </Col>
-          <Col span={8}>
+          <Col span={4}>
             <b>操作</b>
           </Col>
         </Row>
@@ -221,37 +242,41 @@ function TeamList(props) {
                   className="list-div"
                   style={{ display: "flex", alignItems: "center" }}
                 >
+                  <Col span={4}>{item.teamDramaName}</Col>
+                  <Col span={4}> {item.startDate +" "+item.startSession}</Col>
+                  <Col span={4}> {item.dmNickName}</Col>
                   <Col span={4}>
-                    <Avatar shape="square" size={54} src={item.goodsCoverUrl} />
+                    {item.joinedCount < item.teamDramaNumbers
+                      ? item.joinedCount + "/" + item.teamDramaNumbers
+                      : "已满"}
                   </Col>
-                  <Col span={4}>{item.goodsName}</Col>
-                  <Col span={4}>{item.price}元</Col>
-                  <Col span={4}>{getStateTxt(item.state)}</Col>
-                  <Col span={8}>
+                  <Col span={4}>{getStateTxt(item.status)}</Col>
+                  <Col span={4}>
                     <Button
+                      disabled={
+                        item.status != 10 ||
+                        item.joinedCount < item.teamDramaNumbers
+                      }
                       style={{ marginRight: 10 }}
-                      disabled={item.state == 10}
                       type="primary"
-                      onClick={() => updaTeGoodsState(item.Id, 10)}
+                      onClick={() => updateTeamState(item.Id, 30)}
                     >
-                      上架
+                      完成
                     </Button>
                     <Button
-                      style={{ marginRight: 10 }}
-                      disabled={item.state == 20}
-                      type="primary"
-                      onClick={() => updaTeGoodsState(item.Id, 20)}
-                    >
-                      下架
-                    </Button>
-                    <Button
+                      disabled={item.status == 50}
                       style={{ marginRight: 10 }}
                       type="primary"
-                      onClick={() => editGoods(item.Id)}
+                      onClick={() => editTeam(item.Id)}
                     >
                       编辑
                     </Button>
-                    <Button onClick={() => deleteGoods(item.Id)}>删除</Button>
+                    <Button
+                      disabled={item.status == 50}
+                      onClick={() => updateTeamState(item.Id, 50)}
+                    >
+                      解散
+                    </Button>
                     &nbsp;
                   </Col>
                 </Row>

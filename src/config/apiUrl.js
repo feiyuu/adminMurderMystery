@@ -10,6 +10,7 @@ let servicePath = {
   autoId: ipUrl + "autoId", //  获取自动工号
   getFilterDramaList: ipUrl + "getFilterDramaList", //  获取筛选剧本列表
   getDramaDetail: ipUrl + "getDramaDetail", //  获取剧本详情
+  getLikeDramaDetail: ipUrl + "getLikeDramaDetail", //  获取剧本详情模糊查询
   inertDrama: ipUrl + "inertDrama", //  创建剧本
   updateDrama: ipUrl + "updateDrama", //  更新剧本
   getOrderList: ipUrl + "getOrderList", //  获取订单列表
@@ -26,7 +27,11 @@ let servicePath = {
   deleteGoods: ipUrl + "deleteGoods", //  删除商品
   updaTeGoodsState: ipUrl + "updaTeGoodsState", //  更新商品状态
 
-  getTeamList: ipUrl + "getTeamList", //  获取组队列表
+  getTeamList: ipUrl + "getTeamList", //  获取组局列表
+  updateTeamState: ipUrl + "updateTeamState", //  修改组局
+  insertTeam: ipUrl + "insertTeam", //  新增组局
+  updateTeam: ipUrl + "updateTeam", //  修改组局
+  getTeamDetail: ipUrl + "getTeamDetail", //  查询组局详情
 };
 
 export default servicePath;

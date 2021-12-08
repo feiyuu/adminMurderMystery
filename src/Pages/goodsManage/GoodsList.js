@@ -166,8 +166,6 @@ function GoodsList(props) {
               }}
               onClick={() => {
                 setGoodsName("");
-                setState("");
-                getList();
               }}
             >
               清空

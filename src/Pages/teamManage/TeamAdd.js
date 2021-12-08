@@ -3,119 +3,128 @@ import {
   Row,
   Col,
   Form,
-  Upload,
   Input,
   message,
   Button,
   Radio,
-  InputNumber,
+  DatePicker,
+  Modal,
 } from "antd";
-import {
-  LoadingOutlined,
-  PlusOutlined,
-  LeftSquareOutlined,
-} from "@ant-design/icons";
+import { LeftSquareOutlined } from "@ant-design/icons";
 import axios from "axios";
+import moment from "moment";
 import servicePath from "../../config/apiUrl";
 
 const TeamAdd = (props) => {
-  const [Id, setId] = useState(-1);
-  // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [imageUrl, setImageUrl] = useState(""); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [loading, setLoading] = useState(false); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [Id, setId] = useState(-1); // ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [showSelectDrama, setShowSelectDrama] = useState(false);
+  const [likeDramaName, setLikeDramaName] = useState("");
+  const [likedata, setLikeData] = useState("");
+  const [selectDrama, setSlectDrama] = useState();
+  const [selectDate, setSlectDate] = useState();
 
   useEffect(() => {
     let tempId = props.match.params.id;
     console.log("TeamAdd--useEffect===" + tempId);
     if (tempId) {
       setId(tempId);
-      getGoods(tempId);
+      getTeamDetail(tempId);
     }
   }, []);
 
-  const getGoods = (Id) => {
+  const getTeamDetail = (Id) => {
     axios({
       method: "get",
-      url: servicePath.getGoods,
+      url: servicePath.getTeamDetail,
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
       console.log("res.data.data========" + JSON.stringify(res.data.data));
       if (res.data.code == 1) {
-        let data = res.data.data[0];
+        let data = res.data.data;
         form.setFieldsValue({
           ...data,
         });
-        setImageUrl(data.goodsCoverUrl);
+        setSlectDate(data.startDate);
+        setSlectDrama(data.drama);
       } else {
       }
     });
   };
-
-  const handleChange = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-        form.setFieldsValue({
-          goodsCoverUrl: imageUrl,
-        });
-      });
-    }
-  };
-  function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  }
-
-  const beforeUpload = (file) => {
-    const isJPG = file.type === "image/jpeg";
-    const isPNG = file.type === "image/png";
-    const isGIF = file.type === "image/gif";
-    const isBMP = file.type === "image/bmp";
-    if (!(isJPG || isPNG || isGIF || isBMP)) {
-      message.error("您只能上传PNG、JPG、JPEG、Gif、BMP格式的图片");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("您上传的图片不能超过2MB!");
-    }
-    return (isJPG || isPNG || isGIF || isBMP) && isLt2M;
+  const getLikeDramaDetail = () => {
+    axios({
+      method: "get",
+      url: servicePath.getLikeDramaDetail,
+      params: { likeDramaName: likeDramaName },
+      withCredentials: true,
+    }).then((res) => {
+      if (res.data.code == 1) {
+        setLikeData(res.data.data);
+      } else {
+        message.error(res.data.data);
+      }
+    });
   };
 
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    values.Id = Id;
+    if (Id != -1) {
+      values.Id = Id;
+    }else{
+      const user = JSON.parse(localStorage.getItem("user"));
+      values.DMId = user.Id;
+      values.dmNickName = user.dmNickName;
+    }
+    if (!selectDrama) {
+      message.error("请选择剧本");
+      return;
+    }
+    if (!selectDate) {
+      message.error("请选择日期");
+      return;
+    }
+    
+    values.startDate = selectDate;
+    values.teamDramaId = selectDrama.Id;
+    values.teamDramaName = selectDrama.dramaName;
+    values.teamDramaNumbers = selectDrama.numbers;
+
     console.log("Success:", values);
+
     axios({
       method: "post",
-      url: servicePath.updaTeGoods,
+      url: Id != -1 ? servicePath.updateTeam : servicePath.insertTeam,
       data: values,
       withCredentials: true,
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
-        props.history.push("/index/goodsList");
+        props.history.push("/index/teamList");
       } else {
+        message.error(res.data.data);
       }
     });
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
   };
 
   const handleBack = () => {
     props.history.goBack();
   };
-
+  const handleSelectOk = () => {
+    if (!likedata) {
+      message.error("请选择剧本");
+    } else {
+      setSlectDrama(likedata);
+      setShowSelectDrama(false);
+      setLikeData("");
+      setLikeDramaName("");
+    }
+  };
+  const disabledDate = (current) => {
+    return (
+      current > moment().add(7, "days") || current < moment().startOf("day")
+    );
+  };
   const layout = {
     labelCol: {
       span: 4,
@@ -130,12 +139,7 @@ const TeamAdd = (props) => {
       span: 8,
     },
   };
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
+
   return (
     <div>
       {Id != -1 && Id != 0 ? (
@@ -143,53 +147,86 @@ const TeamAdd = (props) => {
           <LeftSquareOutlined /> 返回
         </div>
       ) : null}
-
       <Form {...layout} form={form} onFinish={onFinish}>
         <Form.Item
-          name="goodsName"
-          label="商品名"
+          label="选择剧本"
           rules={[
             {
               required: true,
+              message: "请选择剧本",
             },
           ]}
         >
-          <Input />
+          {!selectDrama ? (
+            <Button
+              onClick={() => {
+                setShowSelectDrama(true);
+              }}
+            >
+              选择剧本
+            </Button>
+          ) : (
+            <div
+              onClick={() => {
+                setShowSelectDrama(true);
+              }}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                visibility: selectDrama ? "visible" : "hidden",
+              }}
+            >
+              <img
+                src={selectDrama.dramaCover}
+                style={{
+                  width: 120,
+                  height: 160,
+                  borderRadius: 6,
+                  marginRight: 10,
+                }}
+              />
+              <div>
+                <div style={{ fontWeight: "bold", fontSize: 18 }}>
+                  {selectDrama.dramaName}
+                </div>
+                <div>
+                  {selectDrama.type}/{selectDrama.theme}/
+                  {selectDrama.background}
+                </div>
+                <div>{selectDrama.NanNvShu}</div>
+                <div>时长：{selectDrama.duration}小时</div>
+                <div>难度：{selectDrama.difficulty}</div>
+                <div>评分：{selectDrama.dramaGrade}分</div>
+                <div>价格：{selectDrama.price}元/人</div>
+              </div>
+            </div>
+          )}
+        </Form.Item>
+        <Form.Item label="选择时间">
+          <DatePicker
+            disabledDate={disabledDate}
+            placeholder="请选择开局日期"
+            format="YYYY-MM-DD"
+            value={selectDate ? moment(selectDate, "YYYY-MM-DD") : ""}
+            onChange={(date, dateString) => {
+              setSlectDate(dateString);
+            }}
+          />
         </Form.Item>
         <Form.Item
-          name="price"
-          label="价格"
+          label="场次"
+          name="startSession"
           rules={[
             {
               required: true,
+              message: "请选择场次",
             },
           ]}
         >
-          <InputNumber />
-        </Form.Item>
-        <Form.Item name="goodsCoverUrl" label="商品图片" initialValue="">
-          <Upload
-            listType="picture-card"
-            showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-          >
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="avatar"
-                style={{ width: "100%", height: "100%" }}
-              />
-            ) : (
-              uploadButton
-            )}
-          </Upload>
-        </Form.Item>
-        <Form.Item label="是否上架" name="state" initialValue={10}>
           <Radio.Group>
-            <Radio.Button value={10}>是</Radio.Button>
-            <Radio.Button value={20}>否</Radio.Button>
+            <Radio.Button value="中场 14:00">中场 14:00</Radio.Button>
+            <Radio.Button value="晚场 19:00">晚场 19:00</Radio.Button>
           </Radio.Group>
         </Form.Item>
         <Form.Item {...tailLayout}>
@@ -198,6 +235,83 @@ const TeamAdd = (props) => {
           </Button>
         </Form.Item>
       </Form>
+
+      <Modal
+        title="请搜索剧本然后添加"
+        visible={showSelectDrama}
+        onOk={handleSelectOk}
+        okText="选择"
+        cancelText="取消"
+        onCancel={() => {
+          setShowSelectDrama(false);
+          setLikeData("");
+          setLikeDramaName("");
+        }}
+      >
+        <Input
+          style={{ width: 200, marginRight: 10 }}
+          placeholder="请输入剧本名"
+          onChange={(e) => {
+            setLikeDramaName(e.target.value);
+          }}
+          value={likeDramaName}
+        ></Input>
+        <Button
+          type="primary"
+          onClick={() => {
+            if (likeDramaName) {
+              getLikeDramaDetail();
+            } else {
+              message.error("请输入剧本名");
+            }
+          }}
+        >
+          搜索
+        </Button>
+        <Button
+          style={{
+            margin: "0 8px",
+          }}
+          onClick={() => {
+            setLikeDramaName("");
+            setLikeData("");
+          }}
+        >
+          清空
+        </Button>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: 20,
+            visibility: likedata ? "visible" : "hidden",
+          }}
+        >
+          <img
+            src={likedata.dramaCover}
+            style={{
+              width: 120,
+              height: 160,
+              borderRadius: 6,
+              marginRight: 10,
+            }}
+          />
+          <div>
+            <div style={{ fontWeight: "bold", fontSize: 18 }}>
+              {likedata.dramaName}
+            </div>
+            <div>
+              {likedata.type}/{likedata.theme}/{likedata.background}
+            </div>
+            <div>{likedata.NanNvShu}</div>
+            <div>时长：{likedata.duration}小时</div>
+            <div>难度：{likedata.difficulty}</div>
+            <div>评分：{likedata.dramaGrade}分</div>
+            <div>价格：{likedata.price}元/人</div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

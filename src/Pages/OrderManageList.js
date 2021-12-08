@@ -158,8 +158,6 @@ function OrderManageList(props) {
               }}
               onClick={() => {
                 setUserName("");
-                setState("");
-                getList();
               }}
             >
               清空
