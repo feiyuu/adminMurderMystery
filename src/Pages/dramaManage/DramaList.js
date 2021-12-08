@@ -21,6 +21,7 @@ const { confirm } = Modal;
 
 function DramaList(props) {
   const [list, setList] = useState([]);
+  const [isenter, setIsenter] = useState();
 
   const getList = (params) => {
     axios({
@@ -209,6 +210,13 @@ function DramaList(props) {
       </Form>
     );
   };
+  const MouseEnter = (index) => {
+    setIsenter(index);
+  };
+
+  const MouseLeave = (index) => {
+    setIsenter(-1);
+  };
   return (
     <div>
       <SearchForm />
@@ -220,14 +228,16 @@ function DramaList(props) {
           },
           pageSize: 30,
         }}
-        style={{ marginTop: 60 ,paddingLeft:20,paddingRight:20}}
+        style={{ marginTop: 60, paddingLeft: 20, paddingRight: 20 }}
         dataSource={list}
-        renderItem={(item) => (
+        renderItem={(item, index) => (
           <List.Item>
             <Card
+              className="drama-card"
               hoverable
-              bordered
               style={{ borderRadius: 6, width: 120, height: 170 }}
+              onMouseEnter={() => MouseEnter(index)} //移入
+              onMouseLeave={() => MouseLeave(index)}
             >
               <div
                 style={{ position: "relative" }}
@@ -240,6 +250,7 @@ function DramaList(props) {
                 />
                 <div
                   style={{
+                    visibility: isenter == index ? "hidden" : "visible",
                     position: "absolute",
                     bottom: 0,
                     color: "black",
@@ -263,8 +274,10 @@ function DramaList(props) {
                     style={{
                       paddingLeft: 8,
                       paddingRight: 8,
-                      paddingBottom: 4,
+                      paddingBottom: 7,
+                      paddingTop: 2,
                       fontSize: 8,
+                      lineHeight: "8px",
                       color: "#333",
                     }}
                   >

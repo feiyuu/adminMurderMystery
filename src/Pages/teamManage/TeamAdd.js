@@ -92,6 +92,7 @@ const TeamAdd = (props) => {
 
     console.log("Success:", values);
 
+    //同一天同一场次组局数，不得超过房间数量
     axios({
       method: "post",
       url: Id != -1 ? servicePath.updateTeam : servicePath.insertTeam,

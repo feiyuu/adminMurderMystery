@@ -93,6 +93,17 @@ function AdminIndex(props) {
     props.history.push("/index/orderManageList");
   };
 
+  const rootSubmenuKeys = ['sub1', 'sub2', 'sub3', 'sub4', 'sub5'];
+  const [openKeys, setOpenKeys] = React.useState([]);
+  const onOpenChange = keys => {
+    const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
+    if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+      setOpenKeys(keys);
+    } else {
+      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+    }
+  };
+
   return (
     <Layout
       style={{
@@ -105,7 +116,7 @@ function AdminIndex(props) {
           <Avatar shape="square" size={54} src={userData.dmAvatarUrl} />
           <div style={{ marginTop: "8px" }}>{userData.dmNickName}</div>
         </div>
-        <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
+        <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline" openKeys={openKeys} onOpenChange={onOpenChange}>
           <Menu.Item
             key="1"
             onClick={handleClickPersonInfo}

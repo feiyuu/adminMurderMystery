@@ -1,6 +1,12 @@
 .ant-card-body {
   padding: 0;
 }
-.ant-image{
+.ant-image {
   display: block;
+}
+.ant-card-bordered {
+  border: none;
+}
+.drama-card{
+  box-shadow: 10px 10px 5px #888888
 }
