@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  message,
-  Button,
-  Radio,
-  DatePicker,
-  Modal,
-} from "antd";
+import { Modal, Form, Input, message, Button, Radio, DatePicker } from "antd";
 import { LeftSquareOutlined } from "@ant-design/icons";
 import axios from "axios";
 import moment from "moment";
@@ -22,6 +12,11 @@ const TeamAdd = (props) => {
   const [likedata, setLikeData] = useState("");
   const [selectDrama, setSlectDrama] = useState();
   const [selectDate, setSlectDate] = useState();
+  const [showCheckPsw, setShowCheckPsw] = useState(false);
+  const [loginPsw, setLoginPsw] = useState("");
+  const [editDmName, setEditDmName] = useState("");
+  const [editDMId, setEditDMId] = useState("");
+  const [valuesData, setValuesData] = useState("");
 
   useEffect(() => {
     let tempId = props.match.params.id;
@@ -47,6 +42,8 @@ const TeamAdd = (props) => {
         });
         setSlectDate(data.startDate);
         setSlectDrama(data.drama);
+        setEditDmName(data.dmNickName);
+        setEditDMId(data.DMId);
       } else {
       }
     });
@@ -68,14 +65,33 @@ const TeamAdd = (props) => {
 
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
-    if (Id != -1) {
-      values.Id = Id;
-    }else{
-      const user = JSON.parse(localStorage.getItem("user"));
-      values.DMId = user.Id;
-      values.dmNickName = user.dmNickName;
+  const checkPassword = () => {
+    console.log("checkPassword====");
+
+    if (!loginPsw) {
+      message.error("密码不可为空");
+      return false;
     }
+    let dataProps = {
+      Id: editDMId,
+      password: loginPsw,
+    };
+
+    axios({
+      method: "post",
+      url: servicePath.checkUserPsw,
+      data: dataProps,
+      withCredentials: true,
+    }).then((res) => {
+      if (res.data.code == 1) {
+        handleOnFinish();
+      } else {
+        message.error("密码错误");
+      }
+    });
+  };
+
+  const onFinish = (values) => {
     if (!selectDrama) {
       message.error("请选择剧本");
       return;
@@ -84,19 +100,34 @@ const TeamAdd = (props) => {
       message.error("请选择日期");
       return;
     }
-    
+
     values.startDate = selectDate;
     values.teamDramaId = selectDrama.Id;
     values.teamDramaName = selectDrama.dramaName;
     values.teamDramaNumbers = selectDrama.numbers;
 
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (Id != -1) {
+      values.Id = Id;
+    } else {
+      values.DMId = user.Id;
+      values.dmNickName = user.dmNickName;
+    }
     console.log("Success:", values);
+    setValuesData(values);
+    if (Id != -1 && user.Id != editDMId) {
+      setShowCheckPsw(true);
+    } else {
+      handleOnFinish(values);
+    }
+  };
 
+  const handleOnFinish = (values) => {
     //同一天同一场次组局数，不得超过房间数量
     axios({
       method: "post",
       url: Id != -1 ? servicePath.updateTeam : servicePath.insertTeam,
-      data: values,
+      data: values || valuesData,
       withCredentials: true,
     }).then((res) => {
       if (res.data.code == 1) {
@@ -107,7 +138,6 @@ const TeamAdd = (props) => {
       }
     });
   };
-
   const handleBack = () => {
     props.history.goBack();
   };
@@ -312,6 +342,31 @@ const TeamAdd = (props) => {
             <div>价格：{likedata.price}元/人</div>
           </div>
         </div>
+      </Modal>
+      <Modal
+        title="非本人创建的组局，请先验证密码"
+        visible={showCheckPsw}
+        onOk={checkPassword}
+        okText="确定"
+        cancelText="取消"
+        onCancel={() => {
+          setShowCheckPsw(false);
+          setLoginPsw("");
+        }}
+      >
+        <Form {...layout}>
+          <Form.Item label="DM">
+            <Input disabled={true} value={editDmName} />
+          </Form.Item>
+          <Form.Item label="密码">
+            <Input
+              value={loginPsw}
+              onChange={(e) => {
+                setLoginPsw(e.target.value);
+              }}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );

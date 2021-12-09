@@ -3,6 +3,7 @@ let ipUrl = "http://127.0.0.1:7001/storeMsAdmin/";
 
 let servicePath = {
   checkLogin: ipUrl + "checkControllerUserLogin", //检查用户名和密码
+  checkUserPsw: ipUrl + "checkUserPsw", //校验用户密码
   getDMUsers: ipUrl + "getDMUsers", //  获取管理员列表
   getUser: ipUrl + "getUser", //  获取用户信息
   updateUser: ipUrl + "updateUser", //  更新用户信息
