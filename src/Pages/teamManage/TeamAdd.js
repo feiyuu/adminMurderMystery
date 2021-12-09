@@ -192,7 +192,7 @@ const TeamAdd = (props) => {
                   {selectDrama.dramaName}
                 </div>
                 <div>
-                  {selectDrama.type}/{selectDrama.theme}/
+                  {selectDrama.genre}/{selectDrama.theme}/
                   {selectDrama.background}
                 </div>
                 <div>{selectDrama.NanNvShu}</div>
@@ -303,7 +303,7 @@ const TeamAdd = (props) => {
               {likedata.dramaName}
             </div>
             <div>
-              {likedata.type}/{likedata.theme}/{likedata.background}
+              {likedata.genre}/{likedata.theme}/{likedata.background}
             </div>
             <div>{likedata.NanNvShu}</div>
             <div>时长：{likedata.duration}小时</div>

@@ -158,8 +158,8 @@ function DramaList(props) {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={3} key="type">
-            <Form.Item label="类型" name="type">
+          <Col span={3} key="genre">
+            <Form.Item label="类型" name="genre">
               <Select defaultValue="全部">
                 <Select.Option value="">全部</Select.Option>
                 <Select.Option value="新本格">新本格</Select.Option>
@@ -281,7 +281,7 @@ function DramaList(props) {
                       color: "#333",
                     }}
                   >
-                    {item.type}/{item.theme}/{item.background}
+                    {item.genre}/{item.theme}/{item.background}
                   </div>
                 </div>
               </div>

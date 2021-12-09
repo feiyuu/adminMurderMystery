@@ -174,7 +174,7 @@ const DramaAdd = (props) => {
             onChange={handleChange}
           >
             {imageUrl ? (
-              <img src={imageUrl} style={{ width: 120, height: 160 }} />
+              <img src={imageUrl} style={{ width: 120, height: 160 ,borderRadius:6}} />
             ) : (
               uploadButton
             )}
@@ -270,7 +270,7 @@ const DramaAdd = (props) => {
         </Form.Item>
         <Form.Item
           label="类型"
-          name="type"
+          name="genre"
           rules={[
             {
               required: true,
@@ -387,8 +387,7 @@ const DramaAdd = (props) => {
                         {item.roleAvatar ? (
                           <Image
                             style={{
-                              borderTopLeftRadius: 4,
-                              borderTopRightRadius: 4,
+                              borderRadius:6,
                               width: 120,
                               height: 160,
                             }}
