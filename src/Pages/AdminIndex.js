@@ -35,9 +35,11 @@ function AdminIndex(props) {
 
   useEffect(() => {
     let user = localStorage.getItem("user");
-    console.log("user grade===" + JSON.parse(user).grade);
-    if (JSON.parse(user)) {
-      setUserData(JSON.parse(user));
+    if (user) {
+      console.log("user grade===" + JSON.parse(user).grade);
+      if (JSON.parse(user)) {
+        setUserData(JSON.parse(user));
+      }
     }
   }, []);
 
@@ -93,10 +95,10 @@ function AdminIndex(props) {
     props.history.push("/index/orderManageList");
   };
 
-  const rootSubmenuKeys = ['sub1', 'sub2', 'sub3', 'sub4', 'sub5'];
+  const rootSubmenuKeys = ["sub1", "sub2", "sub3", "sub4", "sub5"];
   const [openKeys, setOpenKeys] = React.useState([]);
-  const onOpenChange = keys => {
-    const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
+  const onOpenChange = (keys) => {
+    const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
       setOpenKeys(keys);
     } else {
@@ -116,7 +118,13 @@ function AdminIndex(props) {
           <Avatar shape="square" size={54} src={userData.dmAvatarUrl} />
           <div style={{ marginTop: "8px" }}>{userData.dmNickName}</div>
         </div>
-        <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline" openKeys={openKeys} onOpenChange={onOpenChange}>
+        <Menu
+          theme="dark"
+          defaultSelectedKeys={["sub3"]}
+          mode="inline"
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
+        >
           <Menu.Item
             key="1"
             onClick={handleClickPersonInfo}

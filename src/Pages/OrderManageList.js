@@ -216,8 +216,6 @@ function OrderManageList(props) {
                 >
                   <Col span={8} style={{ paddingRight: 20 }}>
                     {getGoods(item.goods)}
-                    {getGoods(item.goods)}
-                    {getGoods(item.goods)}
                   </Col>
                   <Col span={3}>{item.total_price}元</Col>
                   <Col span={3}>{item.order_time}</Col>

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../static/css/dramaManage/DramaAdd.css";
 import {
-  Row,
-  Col,
   Form,
   Upload,
   Input,
@@ -23,7 +21,7 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import servicePath from "../../config/apiUrl";
-import { icons } from "antd/lib/image/PreviewGroup";
+import qiniu from "../../config/common";
 const { TextArea } = Input;
 
 const DramaAdd = (props) => {
@@ -35,11 +33,13 @@ const DramaAdd = (props) => {
   const [nv, setNv] = useState(0);
   const [fanChuan, setFanChuan] = useState("");
   const [roleList, setRoleList] = useState([]);
+  const [uploadToken, setUploadToken] = useState(""); //
+  const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
     let tempId = props.match.params.id;
     console.log("DramaAdd--useEffect===" + tempId);
-
+    getAuth();
     if (tempId) {
       setId(tempId);
       getDramaDetail(tempId);
@@ -60,6 +60,21 @@ const DramaAdd = (props) => {
         form.setFieldsValue({
           ...data,
         });
+        let NanNvShuTemp = data.NanNvShu;
+        let nanStr = NanNvShuTemp.substring(
+          NanNvShuTemp.indexOf("男") - 1,
+          NanNvShuTemp.indexOf("男")
+        );
+        let nvStr = NanNvShuTemp.substring(
+          NanNvShuTemp.indexOf("女") - 1,
+          NanNvShuTemp.indexOf("女")
+        );
+        setNan(Number(nanStr));
+        setNv(Number(nvStr));
+        if (NanNvShuTemp.indexOf("可反串") != -1) {
+          setFanChuan("(可反串)");
+        }
+
         setRoleList(data.roles);
         setImageUrl(data.dramaCover);
       } else {
@@ -73,14 +88,32 @@ const DramaAdd = (props) => {
       return;
     }
     if (info.file.status === "done") {
+      const imageKey = info.file.response.key;
+      const uploadUrl = qiniu.picDomain + imageKey;
+      setImageUrl(uploadUrl);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      getAuth();
+    }
+  };
+  const handleChangeRoleList = (info, index) => {
+
+    if (info.file.status === "uploading") {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-        form.setFieldsValue({
-          dramaCover: imageUrl,
-        });
-      });
+      const imageKey = info.file.response.key;
+      const uploadUrl = qiniu.picDomain + imageKey;
+      let roleListTemp = JSON.parse(JSON.stringify(roleList));
+      roleListTemp[index].roleAvatar = uploadUrl;
+      setRoleList(roleListTemp);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      getAuth();
     }
   };
   function getBase64(img, callback) {
@@ -101,7 +134,53 @@ const DramaAdd = (props) => {
     if (!isLt2M) {
       message.error("您上传的图片不能超过2MB!");
     }
-    return (isJPG || isPNG || isGIF || isBMP) && isLt2M;
+
+    return new Promise((resolve, reject) => {
+      if ((isJPG || isPNG || isGIF || isBMP) && isLt2M) {
+        setFileKey(file.name);
+        return resolve(true);
+      } else {
+        return reject(false);
+      }
+    });
+  };
+  const beforeUploadRoleList = (file, index) => {
+    const isJPG = file.type === "image/jpeg";
+    const isPNG = file.type === "image/png";
+    const isGIF = file.type === "image/gif";
+    const isBMP = file.type === "image/bmp";
+    if (!(isJPG || isPNG || isGIF || isBMP)) {
+      message.error("您只能上传PNG、JPG、JPEG、Gif、BMP格式的图片");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("您上传的图片不能超过2MB!");
+    }
+
+    return new Promise((resolve, reject) => {
+      if ((isJPG || isPNG || isGIF || isBMP) && isLt2M) {
+        let roleListTemp = JSON.parse(JSON.stringify(roleList));
+        roleListTemp[index].fileKey = file.name;
+        setRoleList(roleListTemp);
+        return resolve(true);
+      } else {
+        return reject(false);
+      }
+    });
+  };
+
+  const getAuth = () => {
+    axios({
+      method: "get",
+      url: servicePath.getAuth,
+      withCredentials: true,
+    }).then((res) => {
+      if (res.data.code == 1 && res.data.data) {
+        console.log("getAuth===data == " + res.data.data);
+        setUploadToken(res.data.data);
+      } else {
+      }
+    });
   };
 
   const [form] = Form.useForm();
@@ -110,8 +189,13 @@ const DramaAdd = (props) => {
     if (Id != -1) {
       values.Id = Id;
     }
+    if (!imageUrl) {
+      message.error("请上传剧本封面！");
+      return;
+    }
     values.NanNvShu = nan + "男" + nv + "女" + fanChuan;
     values.numbers = nan + nv;
+    values.dramaCover = imageUrl;
     values.roles = roleList;
     console.log("Success:", values);
     axios({
@@ -169,12 +253,16 @@ const DramaAdd = (props) => {
           <Upload
             listType="picture-card"
             showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            action={qiniu.picUpLoadUrl}
+            data={{ token: uploadToken, key: fileKey }}
             beforeUpload={beforeUpload}
             onChange={handleChange}
           >
             {imageUrl ? (
-              <img src={imageUrl} style={{ width: 120, height: 160 ,borderRadius:6}} />
+              <img
+                src={imageUrl}
+                style={{ width: 120, height: 160, borderRadius: 6 }}
+              />
             ) : (
               uploadButton
             )}
@@ -307,31 +395,30 @@ const DramaAdd = (props) => {
         <Form.Item label="男女数">
           <Space>
             <InputNumber
-              min={1}
+              min={0}
               max={10 - nv}
               style={{ width: 100 }}
               addonAfter={"男"}
+              value={nan}
               onChange={(value) => {
                 setNan(value);
-                setTimeout(() => {}, 100);
                 setRoleList(new Array(value + nv).fill({}));
               }}
             />
             <InputNumber
-              min={1}
+              min={0}
               max={10 - nan}
               style={{ width: 100 }}
               addonAfter={"女"}
+              value={nv}
               onChange={(value) => {
                 setNv(value);
                 setRoleList(new Array(nan + value).fill({}));
               }}
             />
             <Checkbox
+              checked={fanChuan}
               onChange={(e) => {
-                form.setFieldsValue({
-                  NanNvShu: "",
-                });
                 if (e.target.checked) {
                   setFanChuan("(可反串)");
                 } else {
@@ -380,14 +467,17 @@ const DramaAdd = (props) => {
                       <Upload
                         listType="picture-card"
                         showUploadList={false}
-                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                        beforeUpload={beforeUpload}
-                        onChange={handleChange}
+                        action={qiniu.picUpLoadUrl}
+                        data={{ token: uploadToken, key: item.fileKey }}
+                        beforeUpload={(file) =>
+                          beforeUploadRoleList(file, index)
+                        }
+                        onChange={(info) => handleChangeRoleList(info, index)}
                       >
                         {item.roleAvatar ? (
                           <Image
                             style={{
-                              borderRadius:6,
+                              borderRadius: 6,
                               width: 120,
                               height: 160,
                             }}

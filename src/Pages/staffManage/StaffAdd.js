@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../static/css/staffManage/StaffAdd.css";
-import { Row, Col, Form, Upload, Input, message, Button, Radio } from "antd";
+import { Form, Upload, Input, message, Button, Radio } from "antd";
 import {
   LoadingOutlined,
   PlusOutlined,
@@ -8,13 +8,14 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import servicePath from "../../config/apiUrl";
-import { icons } from "antd/lib/image/PreviewGroup";
+import qiniu from "../../config/common";
 
 const StaffAdd = (props) => {
-  const [Id, setId] = useState(-1);
-  // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [imageUrl, setImageUrl] = useState(""); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [loading, setLoading] = useState(false); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [Id, setId] = useState(-1); // ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [imageUrl, setImageUrl] = useState("");
+  const [loading, setLoading] = useState(false); //
+  const [uploadToken, setUploadToken] = useState(""); //
+  const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
     let tempId = props.match.params.id;
@@ -25,6 +26,7 @@ const StaffAdd = (props) => {
     } else {
       autoId();
     }
+    getAuth();
   }, []);
 
   const autoId = (Id) => {
@@ -62,19 +64,23 @@ const StaffAdd = (props) => {
   };
 
   const handleChange = (info) => {
+    console.log("handleChange====info===" + JSON.stringify(info.file));
     if (info.file.status === "uploading") {
       setLoading(true);
       return;
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-        form.setFieldsValue({
-          dmAvatarUrl: imageUrl,
-        });
+      const imageKey = info.file.response.key;
+      const uploadUrl = qiniu.picDomain + imageKey;
+      setImageUrl(uploadUrl);
+      setLoading(false);
+      form.setFieldsValue({
+        dmAvatarUrl: uploadUrl,
       });
+    } else {
+      setLoading(false);
+      getAuth();
     }
   };
   function getBase64(img, callback) {
@@ -95,14 +101,39 @@ const StaffAdd = (props) => {
     if (!isLt2M) {
       message.error("您上传的图片不能超过2MB!");
     }
-    return (isJPG || isPNG || isGIF || isBMP) && isLt2M;
+
+    return new Promise((resolve, reject) => {
+      if ((isJPG || isPNG || isGIF || isBMP) && isLt2M) {
+        setFileKey(file.name);
+        return resolve(true);
+      } else {
+        return reject(false);
+      }
+    });
+  };
+
+  const getAuth = () => {
+    axios({
+      method: "get",
+      url: servicePath.getAuth,
+      withCredentials: true,
+    }).then((res) => {
+      if (res.data.code == 1 && res.data.data) {
+        console.log("getAuth===data == " + res.data.data);
+        setUploadToken(res.data.data);
+      } else {
+      }
+    });
   };
 
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     console.log("Success:", values);
-
+    if (!imageUrl) {
+      message.error("请上传头像！");
+      return;
+    }
     axios({
       method: "post",
       url: Id == -1 ? servicePath.inertUser : servicePath.updateUser,
@@ -146,7 +177,7 @@ const StaffAdd = (props) => {
     </div>
   );
   return (
-    <div>
+    <div className="page-staff-add">
       {Id != -1 && Id != 0 ? (
         <div onClick={handleBack} style={{ width: "60px" }}>
           <LeftSquareOutlined /> 返回
@@ -182,8 +213,10 @@ const StaffAdd = (props) => {
         <Form.Item name="dmAvatarUrl" label="头像" initialValue="">
           <Upload
             listType="picture-card"
+            multiple={false}
             showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            action={qiniu.picUpLoadUrl}
+            data={{ token: uploadToken, key: fileKey }}
             beforeUpload={beforeUpload}
             onChange={handleChange}
           >

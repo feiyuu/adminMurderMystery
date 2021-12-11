@@ -1,7 +1,9 @@
 let ipUrl = "http://127.0.0.1:7001/storeMsAdmin/";
+let ipUrlDefault = "http://127.0.0.1:7001/common/";
 // let ipUrl = "https://server.17jbs.cn/storeMsAdmin/";
 
 let servicePath = {
+  getAuth: ipUrlDefault + "getPicAuth", //
   checkLogin: ipUrl + "checkControllerUserLogin", //检查用户名和密码
   checkUserPsw: ipUrl + "checkUserPsw", //校验用户密码
   getDMUsers: ipUrl + "getDMUsers", //  获取管理员列表

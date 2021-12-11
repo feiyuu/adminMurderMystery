@@ -143,8 +143,13 @@ const TeamAdd = (props) => {
   };
   const handleSelectOk = () => {
     if (!likedata) {
-      message.error("请选择剧本");
+      message.error("请选择剧本！");
     } else {
+
+      if (likedata.beforehand == 1) {
+        message.error("无法选择预发剧本！");
+        return;
+      }
       setSlectDrama(likedata);
       setShowSelectDrama(false);
       setLikeData("");

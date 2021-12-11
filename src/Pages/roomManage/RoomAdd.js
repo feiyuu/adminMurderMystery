@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../static/css/roomManage/RoomAdd.css";
-import {
-  Form,
-  Upload,
-  Input,
-  message,
-  Button,
-} from "antd";
+import { Form, Upload, Input, message, Button } from "antd";
 import {
   LoadingOutlined,
   PlusOutlined,
@@ -14,11 +8,14 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import servicePath from "../../config/apiUrl";
+import qiniu from "../../config/common";
 
 const RoomAdd = (props) => {
   const [Id, setId] = useState(-1); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
   const [imageUrl, setImageUrl] = useState(""); //房间照片
   const [loading, setLoading] = useState(false); //上传中
+  const [uploadToken, setUploadToken] = useState(""); //
+  const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
     let tempId = props.match.params.id;
@@ -26,6 +23,7 @@ const RoomAdd = (props) => {
       setId(tempId);
       getRoomDetail(tempId);
     }
+    getAuth();
   }, []);
 
   const getRoomDetail = (Id) => {
@@ -53,13 +51,16 @@ const RoomAdd = (props) => {
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-        form.setFieldsValue({
-          roomDecorate: imageUrl,
-        });
+      const imageKey = info.file.response.key;
+      const uploadUrl = qiniu.picDomain + imageKey;
+      setImageUrl(uploadUrl);
+      setLoading(false);
+      form.setFieldsValue({
+        roomDecorate: uploadUrl,
       });
+    } else {
+      setLoading(false);
+      getAuth();
     }
   };
   function getBase64(img, callback) {
@@ -67,7 +68,6 @@ const RoomAdd = (props) => {
     reader.addEventListener("load", () => callback(reader.result));
     reader.readAsDataURL(img);
   }
-
   const beforeUpload = (file) => {
     const isJPG = file.type === "image/jpeg";
     const isPNG = file.type === "image/png";
@@ -80,12 +80,39 @@ const RoomAdd = (props) => {
     if (!isLt2M) {
       message.error("您上传的图片不能超过2MB!");
     }
-    return (isJPG || isPNG || isGIF || isBMP) && isLt2M;
+
+    return new Promise((resolve, reject) => {
+      if ((isJPG || isPNG || isGIF || isBMP) && isLt2M) {
+        setFileKey(file.name);
+        return resolve(true);
+      } else {
+        return reject(false);
+      }
+    });
+  };
+
+  const getAuth = () => {
+    axios({
+      method: "get",
+      url: servicePath.getAuth,
+      withCredentials: true,
+    }).then((res) => {
+      if (res.data.code == 1 && res.data.data) {
+        console.log("getAuth===data == " + res.data.data);
+        setUploadToken(res.data.data);
+      } else {
+      }
+    });
   };
 
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
+
+    if (!imageUrl) {
+      message.error("请上传房间装修照片！");
+      return;
+    }
     values.Id = Id;
     console.log("Success:", values);
     axios({
@@ -139,7 +166,8 @@ const RoomAdd = (props) => {
           <Upload
             listType="picture-card"
             showUploadList={false}
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            action={qiniu.picUpLoadUrl}
+            data={{ token: uploadToken, key: fileKey }}
             beforeUpload={beforeUpload}
             onChange={handleChange}
           >
