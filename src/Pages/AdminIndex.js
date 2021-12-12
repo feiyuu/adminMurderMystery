@@ -120,7 +120,6 @@ function AdminIndex(props) {
         </div>
         <Menu
           theme="dark"
-          defaultSelectedKeys={["sub3"]}
           mode="inline"
           openKeys={openKeys}
           onOpenChange={onOpenChange}

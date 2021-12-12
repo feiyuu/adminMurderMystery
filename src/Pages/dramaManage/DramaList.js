@@ -39,24 +39,6 @@ function DramaList(props) {
     });
   };
 
-  const deleteArticle = (id) => {
-    confirm({
-      title: "确定要删除这篇剧本吗？",
-      content: "删除后无法恢复",
-      onOk() {
-        axios(servicePath.deleteArticle + id, { withCredentials: true }).then(
-          (res) => {
-            message.success("剧本删除成功");
-            getList();
-          }
-        );
-      },
-      onCancel() {
-        message.success("取消删除剧本");
-      },
-    });
-  };
-
   //修改剧本的跳转方法
   const updateDrama = (id, checked) => {
     props.history.push("/index/dramaAdd/" + id);

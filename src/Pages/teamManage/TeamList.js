@@ -26,7 +26,7 @@ const removeEmpty = (obj) => {
 function TeamList(props) {
   const [list, setList] = useState([]);
   const [state, setState] = useState(10);
-  const [teamDramaName, setTeamDramaName] = useState("");// 组局剧本名称
+  const [teamDramaName, setTeamDramaName] = useState(""); // 组局剧本名称
   const [dmUser, setDmUser] = useState([]); // 筛选可选项，主持人名字
   const [selectDmUser, setSelectDmUser] = useState(); // 选中的主持人名字
 
@@ -53,8 +53,8 @@ function TeamList(props) {
     confirm({
       content:
         state == 30 ? "确定组局成功，可以完成了吗？" : "确定解散这次组局吗？",
-      okText: "是",
-      cancelText: "否",
+      okText: "确定",
+      cancelText: "取消",
       onOk() {
         let data = {
           TeamId: id,
@@ -243,7 +243,9 @@ function TeamList(props) {
                   style={{ display: "flex", alignItems: "center" }}
                 >
                   <Col span={4}>{item.teamDramaName}</Col>
-                  <Col span={4}> {item.startDate +" "+item.startSession}</Col>
+                  <Col span={4}>
+                    {item.startDate + " " + item.startSession}
+                  </Col>
                   <Col span={4}> {item.dmNickName}</Col>
                   <Col span={4}>
                     {item.joinedCount < item.teamDramaNumbers

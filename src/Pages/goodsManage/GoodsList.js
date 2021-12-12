@@ -81,8 +81,8 @@ function GoodsList(props) {
       title: "确定删除该商品吗？",
       content: "删除后不可恢复",
       okType: "danger",
-      okText: "是",
-      cancelText: "否",
+      okText: "删除",
+      cancelText: "取消",
       onOk() {
         axios({
           method: "post",

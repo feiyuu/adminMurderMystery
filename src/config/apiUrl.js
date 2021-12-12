@@ -15,6 +15,8 @@ let servicePath = {
   getDramaDetail: ipUrl + "getDramaDetail", //  获取剧本详情
   getLikeDramaDetail: ipUrl + "getLikeDramaDetail", //  获取剧本详情模糊查询
   inertDrama: ipUrl + "inertDrama", //  创建剧本
+  deleteDrama: ipUrl + "deleteDrama", //  删除剧本
+  inertDrama: ipUrl + "inertDrama", //  创建剧本
   updateDrama: ipUrl + "updateDrama", //  更新剧本
   getOrderList: ipUrl + "getOrderList", //  获取订单列表
   updaTeOrder: ipUrl + "updaTeOrder", //  更新订单

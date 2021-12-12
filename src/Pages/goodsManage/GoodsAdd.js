@@ -12,8 +12,8 @@ import qiniu from "../../config/common";
 const GoodsAdd = (props) => {
   const [Id, setId] = useState(-1);
   // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [imageUrl, setImageUrl] = useState(""); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [loading, setLoading] = useState(false); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [imageUrl, setImageUrl] = useState(""); //
+  const [loading, setLoading] = useState(false); //
   const [uploadToken, setUploadToken] = useState(""); //
   const [fileKey, setFileKey] = useState(""); //
 

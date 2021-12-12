@@ -13,6 +13,7 @@ import {
   List,
   Card,
   Image,
+  Modal,
 } from "antd";
 import {
   LoadingOutlined,
@@ -23,12 +24,13 @@ import axios from "axios";
 import servicePath from "../../config/apiUrl";
 import qiniu from "../../config/common";
 const { TextArea } = Input;
+const { confirm } = Modal;
 
 const DramaAdd = (props) => {
   const [Id, setId] = useState(-1);
   // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [imageUrl, setImageUrl] = useState(""); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
-  const [loading, setLoading] = useState(false); // Dm的ID，如果是-1说明是新增加，如果不是0，说明是修改
+  const [imageUrl, setImageUrl] = useState(""); //
+  const [loading, setLoading] = useState(false); //
   const [nan, setNan] = useState(0);
   const [nv, setNv] = useState(0);
   const [fanChuan, setFanChuan] = useState("");
@@ -98,7 +100,6 @@ const DramaAdd = (props) => {
     }
   };
   const handleChangeRoleList = (info, index) => {
-
     if (info.file.status === "uploading") {
       setLoading(true);
       return;
@@ -211,7 +212,31 @@ const DramaAdd = (props) => {
       }
     });
   };
-
+  const deleteDrama = () => {
+    confirm({
+      title: "确定要删除剧本吗？",
+      content: "删除后无法恢复",
+      okType: "danger",
+      okText: "删除",
+      cancelText: "取消",
+      onOk() {
+        axios({
+          method: "post",
+          url: servicePath.deleteDrama,
+          data: { dramaId: Id },
+          withCredentials: true,
+        }).then((res) => {
+          if (res.data.code == 1) {
+            message.success("剧本已删除");
+            props.history.push("/index/dramaList");
+          } else {
+            message.error(res.data.data);
+          }
+        });
+      },
+      onCancel() {},
+    });
+  };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
@@ -541,6 +566,15 @@ const DramaAdd = (props) => {
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
             {Id == -1 ? "确认创建" : "确认修改"}
+          </Button>
+          <Button
+            style={{
+              visibility: Id == -1 ? "hidden" : "visible",
+              margin: "0 8px",
+            }}
+            onClick={deleteDrama}
+          >
+            删除剧本
           </Button>
         </Form.Item>
       </Form>
