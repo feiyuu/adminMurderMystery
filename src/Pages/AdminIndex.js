@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Breadcrumb, Avatar,Modal } from "antd";
+import { Layout, Menu, Breadcrumb, Avatar, Modal } from "antd";
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -26,6 +26,7 @@ import RoomList from "./roomManage/RoomList";
 import RoomAdd from "./roomManage/RoomAdd";
 import OrderManageList from "./OrderManageList";
 import GoEasy from "goeasy";
+import neworder from "../../src/static/music/neworder.ogg";
 
 const { confirm } = Modal;
 //初始化
@@ -83,6 +84,11 @@ function AdminIndex(props) {
         console.log(
           "Channel:" + message.channel + " content:" + message.content
         );
+        //播放订单提示音
+        var music = document.getElementById("audio");
+        if (music.paused) {
+          music.play();
+        }
         confirm({
           title: "有新的订单了",
           content: message.content,
@@ -146,6 +152,7 @@ function AdminIndex(props) {
   };
   const handleClickGoodsMan = (e) => {
     console.log(e.item.props);
+
     if (e.key == "GoodsAdd") {
       props.history.push("/index/goodsAdd");
     } else {
@@ -180,6 +187,10 @@ function AdminIndex(props) {
     >
       <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
         <div className="logo">
+          <audio id="audio" src={neworder} preload="true">
+            <track kind="captions" />
+            对不起，您的浏览器不支持HTML5音频播放。
+          </audio>
           <Avatar shape="square" size={54} src={userData.dmAvatarUrl} />
           <div style={{ marginTop: "8px" }}>{userData.dmNickName}</div>
         </div>
