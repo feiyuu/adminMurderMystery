@@ -49,7 +49,7 @@ function TeamList(props) {
     });
   };
 
-  const updateTeamState = (id, state) => {
+  const updateTeamState = (id, state,dmId) => {
     confirm({
       content:
         state == 30 ? "确定组局成功，可以完成了吗？" : "确定解散这次组局吗？",
@@ -59,6 +59,7 @@ function TeamList(props) {
         let data = {
           TeamId: id,
           state: state,
+          dmId: dmId,
         };
         axios({
           method: "post",
@@ -261,7 +262,7 @@ function TeamList(props) {
                       }
                       style={{ marginRight: 10 }}
                       type="primary"
-                      onClick={() => updateTeamState(item.Id, 30)}
+                      onClick={() => updateTeamState(item.Id, 30,item.DMId)}
                     >
                       完成
                     </Button>
