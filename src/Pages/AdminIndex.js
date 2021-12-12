@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Breadcrumb, Avatar } from "antd";
+import { Layout, Menu, Breadcrumb, Avatar,Modal } from "antd";
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -25,6 +25,16 @@ import TeamAdd from "./teamManage/TeamAdd";
 import RoomList from "./roomManage/RoomList";
 import RoomAdd from "./roomManage/RoomAdd";
 import OrderManageList from "./OrderManageList";
+import GoEasy from "goeasy";
+
+const { confirm } = Modal;
+//初始化
+var goeasy = GoEasy.getInstance({
+  host: "hangzhou.goeasy.io", //若是新加坡区域：singapore.goeasy.io
+  appkey: "BS-eb60bdd05efa4e819db911bbb04e56cb",
+  modules: ["pubsub"], //根据需要，传入‘pubsub’或'im’，或数组方式同时传入
+});
+var pubsub = goeasy.pubsub;
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -41,7 +51,62 @@ function AdminIndex(props) {
         setUserData(JSON.parse(user));
       }
     }
+    connectGoeasy();
   }, []);
+
+  const connectGoeasy = () => {
+    //建立连接
+    goeasy.connect({
+      data: { nickname: "Neo" }, //必须是一个对象，pubsub选填，im必填，用于上下线提醒和查询在线用户列表时，扩展更多的属性
+      onSuccess: function () {
+        //连接成功
+        console.log("GoEasy connect successfully."); //连接成功
+      },
+      onFailed: function (error) {
+        //连接失败
+        console.log(
+          "Failed to connect GoEasy, code:" +
+            error.code +
+            ",error:" +
+            error.content
+        );
+      },
+      onProgress: function (attempts) {
+        //连接或自动重连中
+        console.log("GoEasy is connecting", attempts);
+      },
+    });
+
+    pubsub.subscribe({
+      channel: "17jbs-order", //替换为您自己的channel
+      onMessage: function (message) {
+        console.log(
+          "Channel:" + message.channel + " content:" + message.content
+        );
+        confirm({
+          title: "有新的订单了",
+          content: message.content,
+          okText: "去处理",
+          cancelText: "取消",
+          onOk() {
+            props.history.push("/index/orderManageList");
+          },
+          onCancel() {},
+        });
+      },
+      onSuccess: function () {
+        console.log("Channel订阅成功。");
+      },
+      onFailed: function (error) {
+        console.log(
+          "Channel订阅失败, 错误编码：" +
+            error.code +
+            " 错误信息：" +
+            error.content
+        );
+      },
+    });
+  };
 
   const onCollapse = (collapsed) => {
     setCollapsed(collapsed);

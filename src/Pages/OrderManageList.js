@@ -177,19 +177,22 @@ function OrderManageList(props) {
           <Col span={8}>
             <b>商品</b>
           </Col>
-          <Col span={3}>
+          <Col span={2}>
             <b>总价</b>
           </Col>
           <Col span={3}>
             <b>订单时间</b>
           </Col>
           <Col span={3}>
+            <b>房间</b>
+          </Col>
+          <Col span={2}>
             <b>订单状态</b>
           </Col>
           <Col span={3}>
             <b>用户</b>
           </Col>
-          <Col span={4}>
+          <Col span={3}>
             <b>操作</b>
           </Col>
         </Row>
@@ -217,11 +220,12 @@ function OrderManageList(props) {
                   <Col span={8} style={{ paddingRight: 20 }}>
                     {getGoods(item.goods)}
                   </Col>
-                  <Col span={3}>{item.total_price}元</Col>
+                  <Col span={2}>{item.total_price}元</Col>
                   <Col span={3}>{item.order_time}</Col>
-                  <Col span={3}>{getStateTxt(item.state)}</Col>
+                  <Col span={3}>{item.room}</Col>
+                  <Col span={2}>{getStateTxt(item.state)}</Col>
                   <Col span={3}>{item.userName}</Col>
-                  <Col span={4}>
+                  <Col span={3}>
                     <Button
                       disabled={item.state != 30}
                       type="primary"
