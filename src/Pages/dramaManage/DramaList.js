@@ -48,8 +48,9 @@ function DramaList(props) {
     getList({});
   }, []);
 
+  const [form] = Form.useForm();
+  
   const SearchForm = () => {
-    const [form] = Form.useForm();
 
     const submitClick = (e) => {
       e.preventDefault();
