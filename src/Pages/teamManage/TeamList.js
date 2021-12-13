@@ -9,10 +9,12 @@ import {
   Radio,
   Input,
   Select,
+  DatePicker,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import servicePath from "../../config/apiUrl";
+import moment from "moment";
 const { confirm } = Modal;
 
 const removeEmpty = (obj) => {
@@ -29,12 +31,14 @@ function TeamList(props) {
   const [teamDramaName, setTeamDramaName] = useState(""); // 组局剧本名称
   const [dmUser, setDmUser] = useState([]); // 筛选可选项，主持人名字
   const [selectDmUser, setSelectDmUser] = useState(); // 选中的主持人名字
+  const [selectDate, setSlectDate] = useState();
 
   const getList = () => {
     let params = {
       status: state,
       teamDramaName: teamDramaName,
       dmNickName: selectDmUser,
+      startDate: selectDate,
     };
     params = removeEmpty(params);
 
@@ -49,7 +53,7 @@ function TeamList(props) {
     });
   };
 
-  const updateTeamState = (id, state,dmId) => {
+  const updateTeamState = (id, state, dmId) => {
     confirm({
       content:
         state == 30 ? "确定组局成功，可以完成了吗？" : "确定解散这次组局吗？",
@@ -105,13 +109,12 @@ function TeamList(props) {
     }
     return string;
   };
-
+  const disabledDate = (current) => {
+    return current < moment().subtract(30, "days");
+  };
   useEffect(() => {
     getList();
-  }, [state]);
-  useEffect(() => {
-    getList();
-  }, [selectDmUser]);
+  }, [state, selectDmUser, selectDate]);
   useEffect(() => {
     getDmUser();
   }, []);
@@ -158,6 +161,16 @@ function TeamList(props) {
                 }
               })}
             </Select>
+            <DatePicker
+              style={{ marginLeft: 10 }}
+              disabledDate={disabledDate}
+              placeholder="筛选日期"
+              format="YYYY-MM-DD"
+              value={selectDate ? moment(selectDate, "YYYY-MM-DD") : ""}
+              onChange={(date, dateString) => {
+                setSlectDate(dateString);
+              }}
+            />
           </Col>
           <Col
             span={12}
@@ -244,9 +257,7 @@ function TeamList(props) {
                   style={{ display: "flex", alignItems: "center" }}
                 >
                   <Col span={4}>{item.teamDramaName}</Col>
-                  <Col span={4}>
-                    {item.startDate + " " + item.startSession}
-                  </Col>
+                  <Col span={4}>{item.startDate + " " + item.startSession}</Col>
                   <Col span={4}> {item.dmNickName}</Col>
                   <Col span={4}>
                     {item.joinedCount < item.teamDramaNumbers
@@ -262,7 +273,7 @@ function TeamList(props) {
                       }
                       style={{ marginRight: 10 }}
                       type="primary"
-                      onClick={() => updateTeamState(item.Id, 30,item.DMId)}
+                      onClick={() => updateTeamState(item.Id, 30, item.DMId)}
                     >
                       完成
                     </Button>
