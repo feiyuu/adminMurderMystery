@@ -22,7 +22,14 @@ function RoomList(props) {
       url: servicePath.getRooms,
       withCredentials: true,
     }).then((res) => {
-      setList(res.data.data);
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
+        props.history.push("/");
+        return;
+      }
+      if (res.data.code == 1) {
+        setList(res.data.data);
+      }
     });
   };
 

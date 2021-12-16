@@ -34,8 +34,15 @@ function DramaList(props) {
       },
       withCredentials: true,
     }).then((res) => {
+      if(res.data.code==101){
+        message.error("登录失效，请重新登录！")
+        props.history.push("/");
+        return;
+      }
+      if(res.data.code==1){
+        setList(res.data.data);
+      }
       console.log(res);
-      setList(res.data.data);
     });
   };
 
@@ -49,7 +56,7 @@ function DramaList(props) {
   }, []);
 
   const [form] = Form.useForm();
-  
+
   const SearchForm = () => {
 
     const submitClick = (e) => {
@@ -147,7 +154,7 @@ function DramaList(props) {
                 <Select.Option value="">全部</Select.Option>
                 <Select.Option value="新本格">新本格</Select.Option>
                 <Select.Option value="本格">本格</Select.Option>
-                <Select.Option value="变革">变革</Select.Option>
+                <Select.Option value="变格">变格</Select.Option>
                 <Select.Option value="还原">还原</Select.Option>
                 <Select.Option value="封闭">封闭</Select.Option>
                 <Select.Option value="半封闭">半封闭</Select.Option>

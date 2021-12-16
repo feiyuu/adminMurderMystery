@@ -48,8 +48,10 @@ function TeamList(props) {
       withCredentials: true,
       params: params,
     }).then((res) => {
+      if(res.data.code==1){
+        setList(res.data.data);
+      }
       console.log(res);
-      setList(res.data.data);
     });
   };
 
@@ -91,6 +93,11 @@ function TeamList(props) {
       url: servicePath.getDMUsers,
       withCredentials: true,
     }).then((res) => {
+      if(res.data.code==101){
+        message.error("登录失效，请重新登录！")
+        props.history.push("/");
+        return;
+      }
       if (res.data.code == 1) {
         let list = res.data.data;
         setDmUser(list);

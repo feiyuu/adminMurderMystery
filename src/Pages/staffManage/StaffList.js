@@ -14,6 +14,11 @@ function StaffList(props) {
       url: servicePath.getDMUsers,
       withCredentials: true,
     }).then((res) => {
+      if(res.data.code==101){
+        message.error("登录失效，请重新登录！")
+        props.history.push("/");
+        return;
+      }
       console.log(res);
       setList(res.data.data);
     });

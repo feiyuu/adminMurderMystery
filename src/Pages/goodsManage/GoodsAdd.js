@@ -34,6 +34,11 @@ const GoodsAdd = (props) => {
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
+      if(res.data.code==101){
+        message.error("登录失效，请重新登录！")
+        props.history.push("/");
+        return;
+      }
       console.log("res.data.data========" + JSON.stringify(res.data.data));
       if (res.data.code == 1) {
         let data = res.data.data[0];
@@ -100,6 +105,11 @@ const GoodsAdd = (props) => {
       url: servicePath.getAuth,
       withCredentials: true,
     }).then((res) => {
+      if(res.data.code==101){
+        message.error("登录失效，请重新登录！")
+        props.history.push("/");
+        return;
+      }
       if (res.data.code == 1 && res.data.data) {
         console.log("getAuth===data == " + res.data.data);
         setUploadToken(res.data.data);

@@ -42,8 +42,12 @@ function Login(props) {
       console.log("res.data.data========" + JSON.stringify(res.data.data));
       if (res.data.code == 1) {
         localStorage.setItem("Id", res.data.data.Id);
+        localStorage.setItem("token", res.data.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.data));
-        props.history.push("/index");
+
+        //全局设置header携带token
+        axios.defaults.headers["Authorization"] = res.data.data.token;
+        props.history.push("/index/dramaList/");
       } else {
         message.error("用户名或密码错误");
       }
@@ -53,7 +57,10 @@ function Login(props) {
   return (
     <div className="login-div">
       <Spin tip="Lading..." spinning={isLoading}>
-        <Card bordered={true} style={{ width: 400, padding: 20,borderRadius:6 }}>
+        <Card
+          bordered={true}
+          style={{ width: 400, padding: 20, borderRadius: 6 }}
+        >
           <div
             style={{
               textAlign: "center",

@@ -20,13 +20,13 @@ const StaffAdd = (props) => {
   useEffect(() => {
     let tempId = props.match.params.id;
     console.log("StaffAdd--useEffect===" + tempId);
+    getAuth();
     if (tempId) {
       setId(tempId);
       getUser(tempId);
     } else {
       autoId();
     }
-    getAuth();
   }, []);
 
   const autoId = (Id) => {
@@ -118,6 +118,11 @@ const StaffAdd = (props) => {
       url: servicePath.getAuth,
       withCredentials: true,
     }).then((res) => {
+      if(res.data.code==101){
+        message.error("登录失效，请重新登录！")
+        props.history.push("/");
+        return;
+      }
       if (res.data.code == 1 && res.data.data) {
         console.log("getAuth===data == " + res.data.data);
         setUploadToken(res.data.data);
@@ -142,7 +147,6 @@ const StaffAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
-        props.history.push("/index/staffList");
       } else {
       }
     });

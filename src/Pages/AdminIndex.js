@@ -2,13 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Layout, Menu, Breadcrumb, Avatar, Modal } from "antd";
 import {
   DesktopOutlined,
-  PieChartOutlined,
-  FileOutlined,
   TeamOutlined,
   UserOutlined,
   DatabaseOutlined,
   FileSearchOutlined,
-  ReconciliationOutlined,
   ScheduleOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
