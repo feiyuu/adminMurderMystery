@@ -148,6 +148,14 @@ const StaffAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
+        if (Id != -1) {
+          props.history.push("/index/staffList");
+        } else {
+          form.resetFields();
+          setImageUrl("");
+          setLoading(false);
+          setFileKey("");
+        }
       } else {
       }
     });

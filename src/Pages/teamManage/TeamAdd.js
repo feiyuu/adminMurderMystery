@@ -19,7 +19,7 @@ const TeamAdd = (props) => {
   const [valuesData, setValuesData] = useState("");
 
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
     let tempId = props.match.params.id;
     console.log("TeamAdd--useEffect===" + tempId);
     if (tempId) {
@@ -35,8 +35,8 @@ const TeamAdd = (props) => {
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -138,6 +138,21 @@ const TeamAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
+        if (Id != -1) {
+          props.history.push("/index/teamList");
+        } else {
+          form.resetFields();
+          setShowSelectDrama(false);
+          setLikeDramaName("");
+          setLikeData("");
+          setSlectDrama();
+          setSlectDate();
+          setShowCheckPsw(false);
+          setLoginPsw("");
+          setEditDmName("");
+          setEditDMId("");
+          setValuesData("");
+        }
       } else {
         message.error(res.data.data);
       }
@@ -150,7 +165,6 @@ const TeamAdd = (props) => {
     if (!likedata) {
       message.error("请选择剧本！");
     } else {
-
       if (likedata.beforehand == 1) {
         message.error("无法选择预发剧本！");
         return;

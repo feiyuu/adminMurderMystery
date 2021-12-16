@@ -39,7 +39,7 @@ const DramaAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
 
     let tempId = props.match.params.id;
     console.log("DramaAdd--useEffect===" + tempId);
@@ -58,12 +58,12 @@ const DramaAdd = (props) => {
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
-      
+
       if (res.data.code == 1) {
         let data = res.data.data;
         console.log("res.data.data========" + JSON.stringify(res.data.data));
@@ -184,8 +184,8 @@ const DramaAdd = (props) => {
       url: servicePath.getAuth,
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -220,6 +220,18 @@ const DramaAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
+        if (Id != -1) {
+          props.history.push("/index/dramaList");
+        } else {
+          form.resetFields();
+          setImageUrl("");
+          setLoading(false);
+          setNan(0);
+          setNv(0);
+          setFanChuan("");
+          setRoleList([]);
+          setFileKey("");
+        }
       } else {
       }
     });
@@ -486,7 +498,7 @@ const DramaAdd = (props) => {
             },
           ]}
         >
-          <InputNumber style={{ width: 100 }} />
+          <InputNumber min={0} style={{ width: 100 }} />
         </Form.Item>
         <Form.Item label="角色">
           <Space>

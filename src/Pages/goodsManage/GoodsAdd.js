@@ -18,7 +18,7 @@ const GoodsAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
 
     let tempId = props.match.params.id;
     console.log("GoodsAdd--useEffect===" + tempId);
@@ -36,8 +36,8 @@ const GoodsAdd = (props) => {
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -107,8 +107,8 @@ const GoodsAdd = (props) => {
       url: servicePath.getAuth,
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -138,6 +138,14 @@ const GoodsAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
+        if (Id != -1) {
+          props.history.push("/index/goodsList");
+        } else {
+          form.resetFields();
+          setImageUrl(""); //
+          setLoading(false); //
+          setFileKey(""); //
+        }
       } else {
       }
     });
@@ -200,7 +208,7 @@ const GoodsAdd = (props) => {
             },
           ]}
         >
-          <InputNumber />
+          <InputNumber min={0} />
         </Form.Item>
         <Form.Item name="goodsCoverUrl" label="商品图片" initialValue="">
           <Upload

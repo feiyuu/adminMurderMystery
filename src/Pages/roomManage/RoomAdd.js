@@ -18,7 +18,7 @@ const RoomAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
     let tempId = props.match.params.id;
     if (tempId) {
       setId(tempId);
@@ -34,8 +34,8 @@ const RoomAdd = (props) => {
       params: { Id: Id },
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -103,8 +103,8 @@ const RoomAdd = (props) => {
       url: servicePath.getAuth,
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -119,7 +119,6 @@ const RoomAdd = (props) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-
     if (!imageUrl) {
       message.error("请上传房间装修照片！");
       return;
@@ -134,6 +133,14 @@ const RoomAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
+        if (Id != -1) {
+          props.history.push("/index/roomList");
+        } else {
+          form.resetFields();
+          setImageUrl("");
+          setLoading(false);
+          setFileKey("");
+        }
       } else {
       }
     });
