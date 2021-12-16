@@ -30,6 +30,7 @@ function StaffList(props) {
   };
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     getList();
   }, []);
   return (

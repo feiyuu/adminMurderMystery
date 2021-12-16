@@ -39,6 +39,8 @@ const DramaAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    
     let tempId = props.match.params.id;
     console.log("DramaAdd--useEffect===" + tempId);
     getAuth();

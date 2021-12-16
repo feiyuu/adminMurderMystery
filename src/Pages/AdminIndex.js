@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Layout, Menu, Breadcrumb, Avatar, Modal } from "antd";
 import {
   DesktopOutlined,
+  PieChartOutlined,
+  FileOutlined,
   TeamOutlined,
   UserOutlined,
   DatabaseOutlined,
   FileSearchOutlined,
+  ReconciliationOutlined,
   ScheduleOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
@@ -24,6 +27,7 @@ import RoomAdd from "./roomManage/RoomAdd";
 import OrderManageList from "./OrderManageList";
 import GoEasy from "goeasy";
 import neworder from "../../src/static/music/neworder.ogg";
+import axios from "axios";
 
 const { confirm } = Modal;
 //初始化
@@ -42,6 +46,9 @@ function AdminIndex(props) {
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
+    //全局设置header携带token
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+
     let user = localStorage.getItem("user");
     if (user) {
       console.log("user grade===" + JSON.parse(user).grade);
@@ -167,6 +174,7 @@ function AdminIndex(props) {
   const rootSubmenuKeys = ["sub1", "sub2", "sub3", "sub4", "sub5"];
   const [openKeys, setOpenKeys] = React.useState([]);
   const onOpenChange = (keys) => {
+    
     const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
       setOpenKeys(keys);

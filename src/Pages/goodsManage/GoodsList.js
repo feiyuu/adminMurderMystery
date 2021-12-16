@@ -119,6 +119,7 @@ function GoodsList(props) {
   };
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     getList();
   }, [state]);
 

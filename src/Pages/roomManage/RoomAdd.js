@@ -18,6 +18,7 @@ const RoomAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     let tempId = props.match.params.id;
     if (tempId) {
       setId(tempId);

@@ -18,6 +18,7 @@ const StaffAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     let tempId = props.match.params.id;
     console.log("StaffAdd--useEffect===" + tempId);
     getAuth();

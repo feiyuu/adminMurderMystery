@@ -24,6 +24,7 @@ function DramaList(props) {
   const [isenter, setIsenter] = useState();
 
   const getList = (params) => {
+   
     axios({
       method: "get",
       url: servicePath.getFilterDramaList,
@@ -52,6 +53,7 @@ function DramaList(props) {
   };
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     getList({});
   }, []);
 

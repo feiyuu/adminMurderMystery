@@ -18,6 +18,8 @@ const GoodsAdd = (props) => {
   const [fileKey, setFileKey] = useState(""); //
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+
     let tempId = props.match.params.id;
     console.log("GoodsAdd--useEffect===" + tempId);
     if (tempId) {

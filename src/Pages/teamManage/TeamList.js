@@ -120,9 +120,11 @@ function TeamList(props) {
     return current < moment().subtract(30, "days");
   };
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     getList();
   }, [state, selectDmUser, selectDate]);
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     getDmUser();
   }, []);
 

@@ -19,6 +19,7 @@ const TeamAdd = (props) => {
   const [valuesData, setValuesData] = useState("");
 
   useEffect(() => {
+    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
     let tempId = props.match.params.id;
     console.log("TeamAdd--useEffect===" + tempId);
     if (tempId) {
