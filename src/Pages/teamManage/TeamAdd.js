@@ -138,7 +138,6 @@ const TeamAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
-        props.history.push("/index/teamList");
       } else {
         message.error(res.data.data);
       }

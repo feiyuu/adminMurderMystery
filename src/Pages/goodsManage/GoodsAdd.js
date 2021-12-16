@@ -138,7 +138,6 @@ const GoodsAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
-        props.history.push("/index/goodsList");
       } else {
       }
     });

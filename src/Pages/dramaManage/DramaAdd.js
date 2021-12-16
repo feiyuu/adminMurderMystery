@@ -40,7 +40,7 @@ const DramaAdd = (props) => {
 
   useEffect(() => {
     axios.defaults.headers['Authorization'] = localStorage.getItem("token");
-    
+
     let tempId = props.match.params.id;
     console.log("DramaAdd--useEffect===" + tempId);
     getAuth();
@@ -220,7 +220,6 @@ const DramaAdd = (props) => {
     }).then((res) => {
       if (res.data.code == 1) {
         message.success(Id == -1 ? "创建成功" : "修改成功");
-        props.history.push("/index/dramaList");
       } else {
       }
     });
