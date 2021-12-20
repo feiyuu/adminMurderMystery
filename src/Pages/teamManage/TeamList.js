@@ -48,14 +48,14 @@ function TeamList(props) {
       withCredentials: true,
       params: params,
     }).then((res) => {
-      if(res.data.code==1){
+      if (res.data.code == 1) {
         setList(res.data.data);
       }
       console.log(res);
     });
   };
 
-  const updateTeamState = (id, state, dmId) => {
+  const updateTeamState = (id, state, dmId, teamDramaId, organizeTeamId,teamDramaName) => {
     confirm({
       content:
         state == 30 ? "确定组局成功，可以完成了吗？" : "确定解散这次组局吗？",
@@ -66,6 +66,9 @@ function TeamList(props) {
           TeamId: id,
           state: state,
           dmId: dmId,
+          teamDramaId: teamDramaId,
+          organizeTeamId: organizeTeamId,
+          teamDramaName:teamDramaName
         };
         axios({
           method: "post",
@@ -93,8 +96,8 @@ function TeamList(props) {
       url: servicePath.getDMUsers,
       withCredentials: true,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
@@ -120,11 +123,11 @@ function TeamList(props) {
     return current < moment().subtract(30, "days");
   };
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
     getList();
   }, [state, selectDmUser, selectDate]);
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
     getDmUser();
   }, []);
 
@@ -282,7 +285,16 @@ function TeamList(props) {
                       }
                       style={{ marginRight: 10 }}
                       type="primary"
-                      onClick={() => updateTeamState(item.Id, 30, item.DMId)}
+                      onClick={() =>
+                        updateTeamState(
+                          item.Id,
+                          30,
+                          item.DMId,
+                          item.teamDramaId,
+                          item.Id,
+                          item.teamDramaName
+                        )
+                      }
                     >
                       完成
                     </Button>
@@ -296,7 +308,16 @@ function TeamList(props) {
                     </Button>
                     <Button
                       disabled={item.status == 50}
-                      onClick={() => updateTeamState(item.Id, 50)}
+                      onClick={() =>
+                        updateTeamState(
+                          item.Id,
+                          50,
+                          item.DMId,
+                          item.teamDramaId,
+                          item.Id,
+                          item.teamDramaName
+                        )
+                      }
                     >
                       解散
                     </Button>

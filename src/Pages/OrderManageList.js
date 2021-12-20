@@ -41,19 +41,20 @@ function OrderManageList(props) {
       withCredentials: true,
       params: params,
     }).then((res) => {
-      if(res.data.code==101){
-        message.error("登录失效，请重新登录！")
+      if (res.data.code == 101) {
+        message.error("登录失效，请重新登录！");
         props.history.push("/");
         return;
       }
       console.log(res);
-      if(res.data.code==1){
+      if (res.data.code == 1) {
         setList(res.data.data);
       }
     });
   };
 
-  const deliverGoods = (id, state) => {
+  const deliverGoods = (id, state, userId, charge) => {
+
     confirm({
       title:
         state == 40 ? "确定已经把商品交给顾客了吗？" : "确定进行退款操作吗？",
@@ -67,11 +68,13 @@ function OrderManageList(props) {
           data: {
             orderId: id,
             state: state,
+            userId: userId,
+            charge: charge,
           },
           withCredentials: true,
         }).then((res) => {
           if (res.data.code == 1) {
-            message.success("订单已完成");
+            message.success("操作成功");
             getList();
           }
         });
@@ -108,7 +111,7 @@ function OrderManageList(props) {
   };
 
   useEffect(() => {
-    axios.defaults.headers['Authorization'] = localStorage.getItem("token");
+    axios.defaults.headers["Authorization"] = localStorage.getItem("token");
     getList();
   }, [state]);
 
@@ -238,13 +241,17 @@ function OrderManageList(props) {
                       disabled={item.state != 30}
                       type="primary"
                       style={{ marginRight: 10 }}
-                      onClick={() => deliverGoods(item.Id, 40)}
+                      onClick={() =>
+                        deliverGoods(item.Id, 40, item.userId, item.total_price)
+                      }
                     >
                       发货
                     </Button>
                     <Button
                       disabled={item.state != 30 && item.state != 40}
-                      onClick={() => deliverGoods(item.Id, 60)}
+                      onClick={() =>
+                        deliverGoods(item.Id, 60, item.userId, item.total_price)
+                      }
                     >
                       退款
                     </Button>
