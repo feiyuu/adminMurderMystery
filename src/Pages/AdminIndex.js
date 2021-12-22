@@ -246,7 +246,7 @@ function AdminIndex(props) {
             icon={<ScheduleOutlined />}
             title="组局管理"
           >
-            <Menu.Item key="TeamAdd">添加组局</Menu.Item>
+            <Menu.Item key="TeamAdd">新增组局</Menu.Item>
             <Menu.Item key="TeamList">组局列表</Menu.Item>
           </SubMenu>
           <SubMenu

@@ -1,5 +1,7 @@
 let ipUrl = "http://127.0.0.1:7001/storeMsAdmin/";
 let ipUrlDefault = "http://127.0.0.1:7001/common/";
+// let ipUrl = "https://api.xiaoxizhentan.com/storeMsAdmin/";
+// let ipUrlDefault = "https://api.xiaoxizhentan.com/common/";
 // let ipUrl = "https://server.17jbs.cn/storeMsAdmin/";
 
 let servicePath = {

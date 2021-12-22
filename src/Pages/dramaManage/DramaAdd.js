@@ -339,7 +339,7 @@ const DramaAdd = (props) => {
             },
           ]}
         >
-          <TextArea maxLength={76} style={{ height: 60, width: 600 }} />
+          <TextArea maxLength={300} style={{ height: 160, width: 600 }} />
         </Form.Item>
         <Form.Item
           label="时长"
