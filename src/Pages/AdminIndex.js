@@ -17,6 +17,7 @@ import { Route } from "react-router-dom";
 import DramaAdd from "./dramaManage/DramaAdd";
 import DramaList from "./dramaManage/DramaList";
 import StaffAdd from "./staffManage/StaffAdd";
+import EditSelf from "./EditSelf";
 import StaffList from "./staffManage/StaffList";
 import GoodsList from "./goodsManage/GoodsList";
 import GoodsAdd from "./goodsManage/GoodsAdd";
@@ -165,7 +166,7 @@ function AdminIndex(props) {
   };
   const handleClickPersonInfo = (e) => {
     console.log(e.item.props);
-    props.history.push("/index/staffAdd/" + localStorage.getItem("Id"));
+    props.history.push("/index/editSelf/" + localStorage.getItem("Id"));
   };
   const handleClickOrderMan = (e) => {
     props.history.push("/index/orderManageList");
@@ -279,6 +280,7 @@ function AdminIndex(props) {
               <Route path="/index/dramaAdd/" exact component={DramaAdd} />
               <Route path="/index/dramaAdd/:id" exact component={DramaAdd} />
               <Route path="/index/dramaList/" component={DramaList} />
+              <Route path="/index/editSelf/:id" exact component={EditSelf} />
               <Route path="/index/staffAdd/" exact component={StaffAdd} />
               <Route path="/index/staffAdd/:id" exact component={StaffAdd} />
               <Route path="/index/staffList/" component={StaffList} />
