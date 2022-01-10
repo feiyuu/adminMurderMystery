@@ -1,5 +1,5 @@
 let qiniu = {
-  picDomain: "http://r3xy5sep8.hn-bkt.clouddn.com/", //
+  picDomain: "http://img.xiaoxizhentan.com/", //
   picUpLoadUrl: "http://up-z2.qiniup.com", //
 };
 

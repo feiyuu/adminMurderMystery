@@ -159,9 +159,8 @@ const EditSelf = (props) => {
       }
     });
   };
-
-  const handleBack = () => {
-    props.history.goBack();
+  const handleLogout = () => {
+    props.history.push("/");
   };
 
   const layout = {
@@ -238,6 +237,14 @@ const EditSelf = (props) => {
         <Form.Item {...tailLayout}>
           <Button type="primary" htmlType="submit">
             {Id == -1 ? "确认创建" : "确认修改"}
+          </Button>
+          <Button
+            style={{
+              margin: "0 8px",
+            }}
+            onClick={handleLogout}
+          >
+            退出账号
           </Button>
         </Form.Item>
       </Form>
