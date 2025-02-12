@@ -21,7 +21,7 @@ You will also see any lint errors in the console.
 [4]websock消息通知，GoEasy官方，GoEasy开发者文档https://www.goeasy.io/cn/docs/goeasy-2.x/pubsub/message/rest-publish.html
 [5]音频资源，耳铃网，https://www.ear0.com/
 
-代码很粗糙，不建议初学者不加分辨的去照搬代码，项目只考虑最快速写出来，优化版本在我本地，你自己去优化正好差异化
+持续迭代优化版本在我本地，你自己去优化正好差异化
 
 
 
